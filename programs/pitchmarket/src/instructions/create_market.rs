@@ -3,7 +3,7 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::constants::*;
 use crate::error::PitchError;
-use crate::state::{Market, MarketStatus};
+use crate::state::{Market, MarketStatus, PredicateSpec};
 
 #[derive(Accounts)]
 #[instruction(match_id: u64, kind: u8)]
@@ -22,7 +22,7 @@ pub struct CreateMarket<'info> {
 
     pub mint: Account<'info, Mint>,
 
-    /// Vault token account owned by the vault-authority PDA, holding all staked tokens.
+    /// Vault token account owned by the market PDA, holding all staked tokens.
     #[account(
         init,
         payer = authority,
@@ -44,11 +44,15 @@ pub fn create_market_handler(
     kind: u8,
     num_outcomes: u8,
     betting_close_ts: i64,
-    oracle_pubkey: [u8; 32],
+    predicates: Vec<PredicateSpec>,
 ) -> Result<()> {
     require!(
         num_outcomes >= 2 && (num_outcomes as usize) <= MAX_OUTCOMES,
         PitchError::InvalidOutcomeCount
+    );
+    require!(
+        predicates.len() == num_outcomes as usize,
+        PitchError::PredicateCountMismatch
     );
 
     let market = &mut ctx.accounts.market;
@@ -60,14 +64,20 @@ pub fn create_market_handler(
     market.betting_close_ts = betting_close_ts;
     market.total_pool = 0;
     market.pool_per_outcome = [0u64; MAX_OUTCOMES];
-    market.oracle_pubkey = oracle_pubkey;
+
+    let mut specs = [PredicateSpec::default(); MAX_OUTCOMES];
+    for (i, p) in predicates.iter().enumerate() {
+        specs[i] = *p;
+    }
+    market.predicates = specs;
+
     market.authority = ctx.accounts.authority.key();
     market.mint = ctx.accounts.mint.key();
     market.bump = ctx.bumps.market;
     market.vault_bump = ctx.bumps.vault;
 
     msg!(
-        "Market created: match_id={} kind={} outcomes={}",
+        "Market created: fixture={} kind={} outcomes={}",
         match_id,
         kind,
         num_outcomes
