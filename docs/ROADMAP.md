@@ -29,7 +29,13 @@ Track: **Prediction Markets & Settlement** ($18k). Model: **pari-mutuel**. Progr
 - [ ] Bet flow + position view + claim
 - [ ] Indexer websocket → live odds
 
-## Phase 4 · Differentiators & polish — days 18–22
+## Phase 3.5 · Live counters — days 14–18 (see DESIGN.md)
+- [ ] ⏳ Betting-closes-in countdown (FOMO; turns red < 60s)
+- [ ] 💰 Live pool size (count-up on new bets, tabular figures)
+- [ ] 👥 Live bettors count (via indexer websocket)
+- [ ] ⚽ Match clock + live score (TxODDS SSE)
+
+## Phase 4 · Differentiators & polish — days 18–22 (style: Broadcast Premium + Crypto)
 - [ ] Live Match Pitch (animated pitch UI)
 - [ ] Momentum Meter (win-prob curve)
 - [ ] Settlement Theater (verification animation + shareable card)

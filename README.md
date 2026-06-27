@@ -8,11 +8,17 @@ program **verifies the ed25519 signature** before any market resolves. No truste
 settle a market with fake data — not even us.
 
 ## The differentiator
-- **Verifiable settlement** — on-chain ed25519 proof of the TxODDS-signed outcome (not a trusted "admin resolve" button).
+- **Verifiable settlement** — `resolve` settles only against TxODDS' own on-chain Merkle-committed
+  score, via CPI into their `validate_stat`. No trusted oracle key, no "admin resolve" button.
 - **Live Match Pitch** — the markets UI is an animated football pitch reacting to live TxODDS events.
 - **Momentum Meter** — real-time win-probability curve derived from live odds.
+- **Live counters** — betting countdown, pool size, bettor count, match clock (see docs/DESIGN.md).
 - **Settlement Theater** — the moment of on-chain verification is the visual climax.
 - **Pick'em layer** — free social predictions, streaks & leaderboard for frictionless fan onboarding.
+
+## Look & feel
+**Broadcast Premium + Crypto** — World Cup broadcast energy (stadium, pitch, motion) with a
+crypto-native dark/glass finish. Not a casino-style sportsbook. Full spec in [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Monorepo layout
 | Dir | What |
