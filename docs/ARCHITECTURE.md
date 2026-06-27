@@ -27,38 +27,51 @@ TxODDS Live API ──► Oracle Relayer ──► Solana Program ◄── Fron
   - `winning_outcome: Option<u8>`
   - `oracle_pubkey: Pubkey` (the TxODDS signer authorized for this market)
   - `vault: Pubkey` (USDC token account owned by a PDA)
+  - `predicates: [PredicateSpec; N]` — per-outcome rule that decides the winner against TxODDS data
 - **Position** — `seeds = ["position", market, bettor]`
-  - `amount_per_outcome: [u64; N]`, `claimed: bool`
+  - `stake_per_outcome: [u64; N]`, `claimed: bool`
 
 ### Instructions
-1. **`create_market`** — admin/relayer creates a market for a match (sets outcomes, close time, authorized `oracle_pubkey`).
+1. **`create_market`** — relayer/admin creates a market for a fixture, storing `num_outcomes`, `betting_close_ts`, and a `PredicateSpec` per outcome.
 2. **`place_bet`** — bettor deposits USDC into the market vault for a chosen outcome; updates `pool_per_outcome` and their `Position`. Only while `Open` and before `betting_close_ts`.
-3. **`resolve`** — **the key instruction.** Takes the winning outcome + TxODDS signature.
-   - Reads the **Ed25519 sysvar / instruction introspection** to confirm an `Ed25519Program` verify instruction in the same transaction signed `message = (match_id, market_kind, winning_outcome)` with `oracle_pubkey`.
+3. **`resolve`** — **the key instruction.** Takes `winning_outcome` + the TxODDS score proof material (`ts`, `fixture_summary`, `fixture_proof`, `main_tree_proof`, `stat_a`, `stat_b?`).
+   - Binds `fixture_summary.fixture_id == market.match_id` and the supplied stats to the stored `PredicateSpec[winning_outcome]`.
+   - **CPIs into TxODDS `validate_stat`** with that predicate; requires the returned bool == true.
    - Only then sets `status = Resolved`, `winning_outcome`.
-4. **`claim`** — winners withdraw their pro-rata share of `total_pool` from the vault: `payout = stake_on_winner / pool_per_outcome[winner] * total_pool`. Marks `Position.claimed`.
+4. **`claim`** — winners withdraw their pro-rata share of `total_pool` from the vault: `payout = stake_on_winner / pool_per_outcome[winner] * total_pool` minus protocol fee. Marks `Position.claimed`.
+
+### PredicateSpec (how an outcome is decided)
+`{ stat_a_key, stat_b_key, period, use_stat_b, op (0=Add,1=Subtract), threshold, comparison (0=GT,1=LT,2=EQ) }`.
+1X2 full-time (stat_a = home goals, stat_b = away goals, op = Subtract, threshold 0):
+Home = GreaterThan, Draw = EqualTo, Away = LessThan. Stored at creation so the relayer can only
+settle to an outcome whose predicate genuinely holds against the verified score.
 
 ### Pari-mutuel math
 - All bets across outcomes go into one pool.
 - Winners split the **whole** pool proportionally to their stake on the winning outcome.
-- Optional protocol fee (e.g. 1–2%) skimmed at claim → sustainability story for judges.
+- Protocol fee (1%, `PROTOCOL_FEE_BPS`) skimmed at claim → sustainability story for judges.
 - No market maker / no liquidity needed → robust, simple, fair. Ideal for a hackathon MVP.
 
 ## Verifiable settlement (the differentiator)
-The Ed25519 signature is **not** verified by custom Rust crypto. Instead we use Solana's native
-`Ed25519Program`: the relayer builds a transaction with two instructions —
-1. an `Ed25519Program` instruction carrying `(pubkey, message, signature)`, and
-2. our `resolve` instruction.
+We do **not** trust an oracle key and do **not** reimplement Merkle hashing. `resolve` performs a
+**CPI into the TxODDS `txoracle` program's `validate_stat`** instruction, which verifies the score
+statistic against TxODDS' own on-chain-committed Merkle root (`daily_scores_merkle_roots` PDA) and
+evaluates our predicate, returning a bool we read via `get_return_data`.
 
-`resolve` uses **instruction introspection** (`sysvar::instructions`) to assert that ix #0 is a
-genuine Ed25519 verify of the expected `oracle_pubkey` over the expected message. If the signature
-is invalid, the Ed25519Program instruction fails and the whole tx reverts. → trustless settlement.
+Safety bindings in `resolve`:
+- `txodds_program` address must equal the TxODDS program id.
+- `daily_scores_merkle_roots` must be **owned by** the TxODDS program (no forged roots account).
+- `fixture_summary.fixture_id` must equal the market's fixture.
+- supplied `stat_a`/`stat_b` keys + period must match the stored `PredicateSpec`.
+→ The only thing a relayer controls is *which* (already-true) outcome to crank. Trustless settlement,
+secured by the sponsor's own cryptographic commitment. (TxODDS devnet program: `6pW64g…wyP2J`.)
 
 ## Oracle relayer (Node/TS)
-- Polls/streams TxODDS for match state.
-- On final result (or interval-market settlement point), builds `message = borsh(match_id, kind, outcome)`,
-  signs with the TxODDS oracle keypair (ed25519), and submits the 2-ix `resolve` transaction.
-- Holds the oracle signing key; the *authority* to resolve is bound to `oracle_pubkey` on each market.
+- Polls/streams TxODDS for match state (SSE for live, REST for snapshots).
+- On final result, calls `GET /api/scores/stat-validation` to get the three-stage Merkle proof,
+  maps `subTreeProof → fixture_proof`, `mainTreeProof → main_tree_proof`, builds the `StatTerm`s,
+  and submits `resolve(winning_outcome, …)` (with a ComputeBudget bump for the Merkle verification).
+- Holds no settlement authority — anyone could crank `resolve`; correctness is enforced on-chain.
 
 ## Indexer (Node/TS)
 - Mirrors TxODDS odds/scores to a fast store + websocket for the frontend (live odds, momentum).
@@ -71,7 +84,8 @@ is invalid, the Ed25519Program instruction fails and the whole tx reverts. → t
 - **Settlement Theater** — animated on-chain verification moment + shareable "Verified on-chain" card.
 - **Pick'em** — free predictions, streaks, leaderboard (onboarding funnel; no wallet required to start).
 
-## Open questions / to confirm with TxODDS (Telegram)
-- API auth + rate limits + endpoints (odds, live scores, fixtures, final results).
-- Does TxODDS provide signed results, or do we run the signer ourselves over their data?
-- Available World Cup fixtures during the hackathon window for live demo.
+## Open questions / to confirm with TxODDS
+- Exact `validate_stat` behavior under CPI (return_data of a `view` ix) — validate on devnet.
+- The TxODDS stat keys/period for World Cup goals (to fill `PredicateSpec`).
+- `daily_scores_merkle_roots` PDA derivation/`ts` units (s vs ms) for the relayer.
+- Rate limits; available World Cup fixtures during the hackathon window for a live demo.
