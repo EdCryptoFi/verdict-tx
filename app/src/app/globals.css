@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* PitchMarket — Broadcast Premium + Crypto (see docs/DESIGN.md) */
+@theme {
+  --color-bg: #0a0e0c;
+  --color-surface: #12181500;
+  --color-pitch-from: #0e5a2e;
+  --color-pitch-to: #0a3d20;
+  --color-accent: #22e27a;
+  --color-accent-2: #7c5cff;
+  --color-gold: #ffc53d;
+  --color-text: #eaf2ec;
+  --color-muted: #8fa396;
+  --color-danger: #ff5c5c;
+  --font-display: "Archivo", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #103a22 0%, transparent 60%),
+    var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+/* Tabular figures for all live counters so ticking digits don't shift layout. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.glass {
+  background: rgba(18, 24, 21, 0.55);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pitch {
+  background: linear-gradient(160deg, var(--color-pitch-from), var(--color-pitch-to));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@pitchmarket/relayer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "create-market": "tsx src/scripts/createMarket.ts",
+    "resolve": "tsx src/scripts/resolveMarket.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json --outDir dist"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@pitchmarket/shared": "workspace:*",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.98.0",
+    "dotenv": "^16.4.7",
+    "eventsource": "^2.0.2",
+    "undici": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
