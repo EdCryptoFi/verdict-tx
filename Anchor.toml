@@ -15,8 +15,14 @@ pitchmarket = "Bw3Ztg8nPBRxVLLtNqCksQNEP4cbv64xbpzr6YHrX7a7"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
+
+# Load the TxODDS stub at the real TxODDS program address on the local validator, so
+# PitchMarket's CPI into validate_stat works in tests. (Built separately; see scripts.)
+[[test.genesis]]
+address = "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J"
+program = "target/deploy/txodds_stub.so"
 
 [scripts]
 test = "pnpm exec ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
