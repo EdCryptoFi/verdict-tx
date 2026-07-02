@@ -4,7 +4,24 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "echo 'indexer: scaffold pending'",
-    "build": "echo 'indexer: scaffold pending'"
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json --outDir dist"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@pitchmarket/shared": "workspace:*",
+    "@solana/web3.js": "^1.98.0",
+    "dotenv": "^16.4.7",
+    "eventsource": "^2.0.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/eventsource": "^1.1.15",
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }

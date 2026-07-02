@@ -3,6 +3,8 @@ import { BN } from "@coral-xyz/anchor";
 import idlJson from "../idl/pitchmarket.json" assert { type: "json" };
 export type { Pitchmarket } from "./pitchmarket-idl.js";
 
+export * from "./live.js";
+
 export const pitchmarketIdl = idlJson;
 
 /** PitchMarket program id (devnet). */

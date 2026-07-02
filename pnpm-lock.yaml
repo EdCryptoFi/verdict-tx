@@ -94,7 +94,42 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
-  indexer: {}
+  indexer:
+    dependencies:
+      '@coral-xyz/anchor':
+        specifier: ^0.31.1
+        version: 0.31.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+      '@pitchmarket/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@solana/web3.js':
+        specifier: ^1.98.0
+        version: 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+      eventsource:
+        specifier: ^2.0.2
+        version: 2.0.2
+      ws:
+        specifier: ^8.18.0
+        version: 8.21.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+    devDependencies:
+      '@types/eventsource':
+        specifier: ^1.1.15
+        version: 1.1.15
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.20.0
+      '@types/ws':
+        specifier: ^8.5.13
+        version: 8.18.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.22.4
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
 
   relayer:
     dependencies:
@@ -1342,6 +1377,9 @@ packages:
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
+
+  '@types/eventsource@1.1.15':
+    resolution: {integrity: sha512-XQmGcbnxUNa06HR3VBVkc9+A2Vpi9ZyLJcdS5dwaQQ/4ZMWFO+5c90FnMUpbtMZwB/FChoYHwuVg8TvkECacTA==}
 
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
@@ -4139,6 +4177,8 @@ snapshots:
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 22.20.0
+
+  '@types/eventsource@1.1.15': {}
 
   '@types/istanbul-lib-coverage@2.0.6': {}
 
