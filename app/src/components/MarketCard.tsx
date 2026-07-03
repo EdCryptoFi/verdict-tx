@@ -2,6 +2,7 @@
 
 import type { MarketLive } from "@pitchmarket/shared";
 import { Countdown } from "./Countdown";
+import { BetBox } from "./BetBox";
 
 function Stat({ children }: { children: React.ReactNode }) {
   return <span className="tnum text-sm text-[var(--color-muted)]">{children}</span>;
@@ -49,27 +50,32 @@ export function MarketCard({ m }: { m: MarketLive }) {
         <Countdown closeTs={m.closeTs} />
       </div>
 
-      {/* Outcomes */}
+      {/* Outcomes (odds display) */}
       <div className="grid grid-cols-3 gap-2">
         {m.outcomes.map((o, i) => {
           const won = m.winningOutcome === i;
           return (
-            <button
+            <div
               key={o.label}
-              className="rounded-xl border px-3 py-3 text-center transition hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/10"
+              className="rounded-xl border px-3 py-3 text-center"
               style={{
                 borderColor: won ? "var(--color-gold)" : "rgba(255,255,255,0.1)",
                 background: won ? "rgba(255,197,61,0.1)" : "rgba(255,255,255,0.05)",
               }}
             >
-              <div className="text-sm text-[var(--color-muted)]">{o.label}</div>
+              <div className="text-sm text-[var(--color-muted)]">
+                {o.label} {won && "🏆"}
+              </div>
               <div className="tnum text-lg font-bold text-[var(--color-accent)]">
                 {o.odds.toFixed(2)}x
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
+
+      {/* Bet / claim actions */}
+      <BetBox m={m} />
 
       {/* Live counters */}
       <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">

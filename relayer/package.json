@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "setup": "tsx src/scripts/setup.ts",
+    "faucet": "tsx src/scripts/faucet.ts",
     "create-market": "tsx src/scripts/createMarket.ts",
     "resolve": "tsx src/scripts/resolveMarket.ts",
     "typecheck": "tsc --noEmit",
