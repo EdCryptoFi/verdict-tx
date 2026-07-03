@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
-import type { MarketLive } from "@pitchmarket/shared";
+import type { MarketLive } from "@verdict/shared";
 import { useProgram, USDC_MINT, USDC_DECIMALS } from "@/lib/program";
 import { placeBet, claim, fetchPosition, type PositionView } from "@/lib/actions";
 

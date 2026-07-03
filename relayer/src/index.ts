@@ -8,7 +8,7 @@ import { adminKeypair, config } from "./config.js";
 import { getFixtures } from "./txodds.js";
 
 async function main() {
-  console.log(`PitchMarket relayer · cluster=${config.cluster} · mock=${config.txodds.mock}`);
+  console.log(`Verdict relayer · cluster=${config.cluster} · mock=${config.txodds.mock}`);
   const admin = adminKeypair();
   console.log(`admin: ${admin.publicKey.toBase58()}`);
 

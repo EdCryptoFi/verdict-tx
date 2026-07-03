@@ -1,4 +1,4 @@
-# Design — PitchMarket
+# Design — Verdict
 
 ## Visual direction: "Broadcast Premium + Crypto"
 Energy of a premium World Cup TV broadcast (stadium, pitch, motion) with a crypto-native finish

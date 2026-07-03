@@ -6,7 +6,7 @@ import {
   marketPda,
   vaultPda,
   MarketKind,
-} from "@pitchmarket/shared";
+} from "@verdict/shared";
 import { getProgram } from "./program.js";
 import { STAT } from "./mock.js";
 

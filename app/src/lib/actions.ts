@@ -14,7 +14,7 @@ import {
   marketPda,
   vaultPda,
   positionPda,
-} from "@pitchmarket/shared";
+} from "@verdict/shared";
 
 const KIND = MarketKind.FullTime1X2;
 

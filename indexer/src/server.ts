@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import type { IndexerMessage } from "@pitchmarket/shared";
+import type { IndexerMessage } from "@verdict/shared";
 import type { MarketStore } from "./store.js";
 
 /** HTTP `/markets` snapshot + WebSocket live feed of market updates. */

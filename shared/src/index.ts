@@ -7,7 +7,7 @@ export * from "./live";
 
 export const pitchmarketIdl = idlJson;
 
-/** PitchMarket program id (devnet). */
+/** Verdict program id (devnet). */
 export const PROGRAM_ID = new PublicKey(
   "Bw3Ztg8nPBRxVLLtNqCksQNEP4cbv64xbpzr6YHrX7a7"
 );

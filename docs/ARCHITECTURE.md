@@ -1,4 +1,4 @@
-# Architecture — PitchMarket
+# Architecture — Verdict
 
 ## Goal
 World Cup prediction markets on Solana with **verifiable settlement**: markets resolve only

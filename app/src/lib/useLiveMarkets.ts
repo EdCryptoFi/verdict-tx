@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { MarketLive, IndexerMessage } from "@pitchmarket/shared";
+import type { MarketLive, IndexerMessage } from "@verdict/shared";
 
 const WS_URL = process.env.NEXT_PUBLIC_INDEXER_WS ?? "ws://localhost:8787";
 

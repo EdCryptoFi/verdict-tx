@@ -8,7 +8,7 @@ import {
   mapStatTerm,
   MarketKind,
   TXODDS_PROGRAM_ID,
-} from "@pitchmarket/shared";
+} from "@verdict/shared";
 import { getProgram } from "./program.js";
 import { getStatValidation } from "./txodds.js";
 import { STAT } from "./mock.js";

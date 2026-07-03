@@ -1,4 +1,4 @@
-# PitchMarket — Verifiable World Cup Prediction Markets on Solana
+# Verdict — Verifiable World Cup Prediction Markets on Solana
 
 > TxODDS World Cup Hackathon · **Prediction Markets & Settlement** track ($18k)
 

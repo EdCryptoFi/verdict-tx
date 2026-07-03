@@ -1,4 +1,4 @@
-import type { MarketLive } from "@pitchmarket/shared";
+import type { MarketLive } from "@verdict/shared";
 import { EventEmitter } from "node:events";
 
 /**

@@ -3,7 +3,7 @@
 //! It implements `validate_stat` with the SAME instruction name (so the Anchor discriminator
 //! matches the real program) and the SAME argument layout (so Borsh deserialization matches).
 //! Instead of verifying a Merkle proof, it simply EVALUATES the predicate against the supplied
-//! stat values and returns the boolean — enough to exercise PitchMarket's CPI + binding logic
+//! stat values and returns the boolean — enough to exercise Verdict's CPI + binding logic
 //! end-to-end on localnet. Loaded at the real TxODDS address via Anchor.toml `[[test.genesis]]`.
 
 use anchor_lang::prelude::*;
@@ -48,7 +48,7 @@ pub struct ValidateStat<'info> {
     pub daily_scores_merkle_roots: UncheckedAccount<'info>,
 }
 
-// ---- Types mirrored from the TxODDS IDL (must match PitchMarket's txodds.rs) ----
+// ---- Types mirrored from the TxODDS IDL (must match Verdict's txodds.rs) ----
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 pub struct ProofNode {

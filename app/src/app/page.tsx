@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { MarketLive } from "@pitchmarket/shared";
+import type { MarketLive } from "@verdict/shared";
 import { MarketCard } from "@/components/MarketCard";
 import { useLiveMarkets } from "@/lib/useLiveMarkets";
 
@@ -59,7 +59,7 @@ export default function Home() {
     <main className="mx-auto max-w-5xl px-4 py-8">
       <header className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">PITCHMARKET</h1>
+          <h1 className="text-3xl font-black tracking-tight">VERDICT</h1>
           <p className="text-sm text-[var(--color-muted)]">
             Verifiable World Cup markets · settled on-chain by TxODDS
           </p>

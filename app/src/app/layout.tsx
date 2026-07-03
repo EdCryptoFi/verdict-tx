@@ -3,7 +3,7 @@ import "./globals.css";
 import { SolanaProviders } from "@/components/WalletProvider";
 
 export const metadata: Metadata = {
-  title: "PitchMarket — Verifiable World Cup Markets",
+  title: "Verdict — Verifiable World Cup Markets",
   description:
     "Pari-mutuel World Cup prediction markets on Solana, settled against TxODDS' on-chain Merkle-verified scores.",
 };

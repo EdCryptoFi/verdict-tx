@@ -2,7 +2,7 @@
  * One-time setup: create a test USDC mint, a demo 1X2 market, and fund the admin.
  * Works on localnet or devnet (uses SOLANA_RPC_URL / ADMIN_KEYPAIR from .env).
  *
- * Usage: pnpm --filter @pitchmarket/relayer exec tsx src/scripts/setup.ts [fixtureId]
+ * Usage: pnpm --filter @verdict/relayer exec tsx src/scripts/setup.ts [fixtureId]
  */
 import { createMint, mintTo, getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
 import { connection, adminKeypair } from "../config.js";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { MarketLive } from "@pitchmarket/shared";
+import type { MarketLive } from "@verdict/shared";
 import { Countdown } from "./Countdown";
 import { BetBox } from "./BetBox";
 

@@ -2,7 +2,7 @@
 import { BN } from "@coral-xyz/anchor";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { MarketKind, marketPda, vaultPda, positionPda } from "@pitchmarket/shared";
+import { MarketKind, marketPda, vaultPda, positionPda } from "@verdict/shared";
 import { adminKeypair, config } from "../config.js";
 import { getProgram } from "../program.js";
 

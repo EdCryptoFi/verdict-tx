@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { useConnection, useAnchorWallet } from "@solana/wallet-adapter-react";
-import { pitchmarketIdl, type Pitchmarket } from "@pitchmarket/shared";
+import { pitchmarketIdl, type Pitchmarket } from "@verdict/shared";
 
 /** Anchor Program bound to the connected wallet (null until a wallet connects). */
 export function useProgram(): Program<Pitchmarket> | null {
