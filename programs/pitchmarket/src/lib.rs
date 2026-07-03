@@ -71,4 +71,15 @@ pub mod pitchmarket {
     pub fn claim(ctx: Context<Claim>) -> Result<()> {
         instructions::claim::claim_handler(ctx)
     }
+
+    /// Cancel an unresolved market (authority anytime; anyone after the refund grace period),
+    /// moving it to a refundable state.
+    pub fn cancel_market(ctx: Context<CancelMarket>) -> Result<()> {
+        instructions::cancel_market::cancel_market_handler(ctx)
+    }
+
+    /// Reclaim the full stake from a refunded/cancelled market.
+    pub fn claim_refund(ctx: Context<ClaimRefund>) -> Result<()> {
+        instructions::claim_refund::claim_refund_handler(ctx)
+    }
 }

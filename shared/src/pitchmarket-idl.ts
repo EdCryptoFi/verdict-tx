@@ -14,6 +14,34 @@ export type Pitchmarket = {
   },
   "instructions": [
     {
+      "name": "cancelMarket",
+      "docs": [
+        "Cancel an unresolved market (authority anytime; anyone after the refund grace period),",
+        "moving it to a refundable state."
+      ],
+      "discriminator": [
+        205,
+        121,
+        84,
+        210,
+        222,
+        71,
+        150,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "claim",
       "docs": [
         "Claim a winning position's pro-rata share of the pool."
@@ -27,6 +55,92 @@ export type Pitchmarket = {
         159,
         108,
         210
+      ],
+      "accounts": [
+        {
+          "name": "bettor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market"
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "account",
+                "path": "bettor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bettorTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimRefund",
+      "docs": [
+        "Reclaim the full stake from a refunded/cancelled market."
+      ],
+      "discriminator": [
+        15,
+        16,
+        30,
+        161,
+        255,
+        228,
+        97,
+        60
       ],
       "accounts": [
         {
@@ -463,46 +577,66 @@ export type Pitchmarket = {
     },
     {
       "code": 6008,
+      "name": "bettingStillOpen",
+      "msg": "Cannot resolve until the betting window has closed"
+    },
+    {
+      "code": 6009,
+      "name": "marketNotRefunded",
+      "msg": "Market is not in a refundable state"
+    },
+    {
+      "code": 6010,
+      "name": "notCancellable",
+      "msg": "Not authorized to cancel yet (authority-only until the refund grace period passes)"
+    },
+    {
+      "code": 6011,
+      "name": "noRefundAvailable",
+      "msg": "No stake to refund in this position"
+    },
+    {
+      "code": 6012,
       "name": "alreadyClaimed",
       "msg": "Position has already been claimed"
     },
     {
-      "code": 6009,
+      "code": 6013,
       "name": "nothingToClaim",
       "msg": "No winning stake in this position"
     },
     {
-      "code": 6010,
+      "code": 6014,
       "name": "fixtureMismatch",
       "msg": "Proof is for a different fixture than this market"
     },
     {
-      "code": 6011,
+      "code": 6015,
       "name": "statSpecMismatch",
       "msg": "Provided stat does not match the outcome's predicate spec"
     },
     {
-      "code": 6012,
+      "code": 6016,
       "name": "missingSecondStat",
       "msg": "This outcome's predicate requires a second stat that was not provided"
     },
     {
-      "code": 6013,
+      "code": 6017,
       "name": "invalidRootsAccount",
       "msg": "The TxODDS roots account is not owned by the TxODDS program"
     },
     {
-      "code": 6014,
+      "code": 6018,
       "name": "invalidTxoddsProgram",
       "msg": "Wrong TxODDS program account"
     },
     {
-      "code": 6015,
+      "code": 6019,
       "name": "oracleValidationFailed",
       "msg": "TxODDS validate_stat did not confirm the claimed outcome"
     },
     {
-      "code": 6016,
+      "code": 6020,
       "name": "mathOverflow",
       "msg": "Arithmetic overflow"
     }
@@ -641,6 +775,9 @@ export type Pitchmarket = {
           },
           {
             "name": "resolved"
+          },
+          {
+            "name": "refunded"
           }
         ]
       }

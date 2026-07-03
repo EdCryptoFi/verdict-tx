@@ -6,6 +6,8 @@ use crate::constants::MAX_OUTCOMES;
 pub enum MarketStatus {
     Open,
     Resolved,
+    /// Match cancelled, or resolved with no stake on the winning outcome → everyone refunded.
+    Refunded,
 }
 
 /// The on-chain definition of how one outcome is decided against TxODDS score data.

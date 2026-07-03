@@ -56,6 +56,11 @@ pub fn resolve_handler(
         PitchError::OutcomeOutOfRange
     );
 
+    // Betting must be closed before settlement, so a live in-play score can't be used to
+    // resolve the market while people are still allowed to bet.
+    let now = Clock::get()?.unix_timestamp;
+    require!(now >= market.betting_close_ts, PitchError::BettingStillOpen);
+
     // The proof must be for this market's fixture.
     require!(
         fixture_summary.fixture_id == market.match_id as i64,
@@ -108,13 +113,23 @@ pub fn resolve_handler(
     )?;
     require!(holds, PitchError::OracleValidationFailed);
 
-    market.status = MarketStatus::Resolved;
     market.winning_outcome = winning_outcome;
-
-    msg!(
-        "Market resolved: fixture={} winning_outcome={} (TxODDS Merkle-verified)",
-        market.match_id,
-        winning_outcome
-    );
+    // If nobody staked the winning outcome, there are no winners to split the pool — refund
+    // every bettor their stake instead of locking the funds forever.
+    if market.pool_per_outcome[winning_outcome as usize] == 0 {
+        market.status = MarketStatus::Refunded;
+        msg!(
+            "Market resolved with no winning stake → refund: fixture={} winning_outcome={}",
+            market.match_id,
+            winning_outcome
+        );
+    } else {
+        market.status = MarketStatus::Resolved;
+        msg!(
+            "Market resolved: fixture={} winning_outcome={} (TxODDS Merkle-verified)",
+            market.match_id,
+            winning_outcome
+        );
+    }
     Ok(())
 }

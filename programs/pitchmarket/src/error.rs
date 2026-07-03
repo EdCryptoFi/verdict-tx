@@ -18,6 +18,14 @@ pub enum PitchError {
     MarketNotResolved,
     #[msg("Market is already resolved")]
     AlreadyResolved,
+    #[msg("Cannot resolve until the betting window has closed")]
+    BettingStillOpen,
+    #[msg("Market is not in a refundable state")]
+    MarketNotRefunded,
+    #[msg("Not authorized to cancel yet (authority-only until the refund grace period passes)")]
+    NotCancellable,
+    #[msg("No stake to refund in this position")]
+    NoRefundAvailable,
     #[msg("Position has already been claimed")]
     AlreadyClaimed,
     #[msg("No winning stake in this position")]
