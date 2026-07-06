@@ -8,6 +8,7 @@
     "start": "tsx src/index.ts",
     "setup": "tsx src/scripts/setup.ts",
     "faucet": "tsx src/scripts/faucet.ts",
+    "subscribe": "tsx src/scripts/subscribe.ts",
     "create-market": "tsx src/scripts/createMarket.ts",
     "resolve": "tsx src/scripts/resolveMarket.ts",
     "typecheck": "tsc --noEmit",
@@ -20,6 +21,7 @@
     "@solana/web3.js": "^1.98.0",
     "dotenv": "^16.4.7",
     "eventsource": "^2.0.2",
+    "tweetnacl": "^1.0.3",
     "undici": "^7.2.0"
   },
   "devDependencies": {
