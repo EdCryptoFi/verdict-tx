@@ -1,0 +1,15 @@
+# Only the JS/TS workspace is needed to build the Next.js app.
+node_modules
+**/node_modules
+target
+**/target
+programs
+deps
+tests
+migrations
+.anchor
+test-ledger
+.git
+**/.next
+*.log
+scratchpad
