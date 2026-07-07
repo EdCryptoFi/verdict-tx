@@ -1,18 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
 @import "tailwindcss";
 
-/* Verdict — Broadcast Premium + Crypto (see docs/DESIGN.md) */
+/* Radical Velocity — High-Octane Sports Design System (see frontend/radical_velocity/) */
 @theme {
-  --color-bg: #0a0e0c;
-  --color-surface: #12181500;
-  --color-pitch-from: #0e5a2e;
-  --color-pitch-to: #0a3d20;
-  --color-accent: #22e27a;
-  --color-accent-2: #7c5cff;
-  --color-gold: #ffc53d;
-  --color-text: #eaf2ec;
-  --color-muted: #8fa396;
-  --color-danger: #ff5c5c;
-  --font-display: "Archivo", system-ui, sans-serif;
+  --color-background: #131313;
+  --color-surface: #131313;
+  --color-surface-dim: #131313;
+  --color-surface-bright: #393939;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-container-low: #1b1c1c;
+  --color-surface-container: #1f2020;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-highest: #353535;
+  --color-on-surface: #e4e2e1;
+  --color-on-surface-variant: #b9ccb2;
+  --color-inverse-surface: #e4e2e1;
+  --color-inverse-on-surface: #303030;
+  --color-outline: #84967e;
+  --color-outline-variant: #3b4b37;
+  --color-surface-tint: #00e639;
+  --color-primary: #ebffe2;
+  --color-on-primary: #003907;
+  --color-primary-container: #00ff41;
+  --color-on-primary-container: #007117;
+  --color-inverse-primary: #006e16;
+  --color-secondary: #dfb7ff;
+  --color-on-secondary: #4b007e;
+  --color-secondary-container: #9d05ff;
+  --color-on-secondary-container: #f7e6ff;
+  --color-tertiary: #fcf8f8;
+  --color-on-tertiary: #313030;
+  --color-tertiary-container: #dfdcdb;
+  --color-on-tertiary-container: #626060;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+  --color-primary-fixed: #72ff70;
+  --color-primary-fixed-dim: #00e639;
+  --color-on-primary-fixed: #002203;
+  --color-on-primary-fixed-variant: #00530e;
+  --color-secondary-fixed: #f1daff;
+  --color-secondary-fixed-dim: #dfb7ff;
+  --color-on-secondary-fixed: #2d004f;
+  --color-on-secondary-fixed-variant: #6b00b0;
+  --color-tertiary-fixed: #e5e2e1;
+  --color-tertiary-fixed-dim: #c9c6c5;
+  --color-on-tertiary-fixed: #1c1b1b;
+  --color-on-tertiary-fixed-variant: #474646;
+  --color-electric-cyan: #00F0FF;
+  --color-danger-red: #FF003C;
+  --color-metallic-gray: #4A4A4A;
+  --color-surface-variant: #353535;
+
+  --font-display-hero: var(--font-anybody), system-ui, sans-serif;
+  --font-headline-lg: var(--font-anybody), system-ui, sans-serif;
+  --font-headline-lg-mobile: var(--font-anybody), system-ui, sans-serif;
+  --font-body-md: var(--font-hanken), system-ui, sans-serif;
+  --font-label-caps: var(--font-hanken), system-ui, sans-serif;
+  --font-data-numeric: var(--font-jetbrains), monospace;
+
+  --font-size-display-hero: 64px;
+  --font-size-headline-lg: 32px;
+  --font-size-headline-lg-mobile: 24px;
+  --font-size-body-md: 16px;
+  --font-size-data-numeric: 18px;
+  --font-size-label-caps: 12px;
+
+  --spacing-gutter: 16px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 48px;
+  --spacing-container-max: 1280px;
+  --spacing-unit: 4px;
+
+  --radius-none: 0px;
 }
 
 :root {
@@ -20,27 +81,91 @@
 }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #103a22 0%, transparent 60%),
-    var(--color-bg);
-  color: var(--color-text);
+  background-color: #131313;
+  color: #e4e2e1;
+  font-family: var(--font-hanken), system-ui, sans-serif;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Tabular figures for all live counters so ticking digits don't shift layout. */
+/* Utilities */
 .tnum {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.glass {
-  background: rgba(18, 24, 21, 0.55);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.scanline {
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 65, 0.05) 50%);
+  background-size: 100% 4px;
 }
 
-.pitch {
-  background: linear-gradient(160deg, var(--color-pitch-from), var(--color-pitch-to));
+.neon-glow-primary {
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+}
+
+.neon-glow-purple {
+  box-shadow: 0 0 15px rgba(157, 5, 255, 0.4);
+}
+
+.neon-glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+.pitch-pattern {
+  background-image: radial-gradient(circle at 2px 2px, rgba(0, 255, 65, 0.03) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.pulse-live {
+  animation: pulse-live 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-live {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0e0e0e;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4A4A4A;
+}
+
+.radical-velocity-italic {
+  font-family: var(--font-anybody), sans-serif;
+  font-style: italic;
+}
+
+.hud-border {
+  border: 1px solid rgba(0, 230, 57, 0.2);
+  position: relative;
+}
+
+@keyframes pulse-card {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.animate-pulse-card {
+  animation: pulse-card 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.italic-caps {
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.glass-hud {
+  background: rgba(21, 21, 21, 0.8);
+  backdrop-filter: blur(12px);
 }
 
 @media (prefers-reduced-motion: reduce) {

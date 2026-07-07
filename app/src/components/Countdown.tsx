@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/** ⏳ Betting-closes-in countdown. Turns danger-red under 60s. The FOMO driver. */
 export function Countdown({ closeTs }: { closeTs: number }) {
-  // `null` until mounted so SSR and the first client render match (no Date.now() on the server).
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     setNow(Date.now());
@@ -14,7 +12,7 @@ export function Countdown({ closeTs }: { closeTs: number }) {
 
   if (now === null) {
     return (
-      <span className="tnum text-sm font-medium" style={{ color: "var(--color-muted)" }}>
+      <span className="tnum text-sm font-medium text-on-surface-variant italic radical-velocity-italic">
         ⏳ closes soon
       </span>
     );
@@ -27,8 +25,8 @@ export function Countdown({ closeTs }: { closeTs: number }) {
 
   return (
     <span
-      className="tnum text-sm font-medium"
-      style={{ color: closing ? "var(--color-danger)" : "var(--color-muted)" }}
+      className="tnum text-sm font-medium font-data-numeric italic"
+      style={{ color: closing ? "var(--color-danger-red)" : "var(--color-primary-container)" }}
     >
       {remaining === 0 ? "betting closed" : `⏳ closes in ${mm}:${ss}`}
     </span>
