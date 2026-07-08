@@ -19,9 +19,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             VERDICT
           </span>
           <div className="hidden md:flex gap-6 items-center">
-            <a className="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container py-1 transition-all" href="/">World Cup Markets</a>
-            <span className="font-label-caps text-label-caps text-on-surface-variant/40 cursor-not-allowed" title="Coming soon">Exchange</span>
-            <span className="font-label-caps text-label-caps text-on-surface-variant/40 cursor-not-allowed" title="Coming soon">Leaderboard</span>
+            <a className="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container py-1 transition-all" href="/">Markets</a>
+            <a className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary-container transition-colors" href="/portfolio">Portfolio</a>
+            <a className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary-container transition-colors" href="/leaderboard">Leaderboard</a>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -42,12 +42,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <a className="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold italic border-r-4 border-electric-cyan hover:translate-x-1 transition-all" href="/">
               <Icon name="globe" /><span className="font-label-caps text-label-caps">FIFA World Cup</span>
             </a>
-            <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="#markets">
+            <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/#markets">
               <Icon name="live" /><span className="font-label-caps text-label-caps">Live Now</span>
             </a>
-            {["Tournament Bracket", "Squad Stats", "Match Center"].map((label, i) => (
+            <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/portfolio">
+              <Icon name="user" /><span className="font-label-caps text-label-caps">Portfolio</span>
+            </a>
+            <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/leaderboard">
+              <Icon name="chart" /><span className="font-label-caps text-label-caps">Leaderboard</span>
+            </a>
+            {["Tournament Bracket", "Squad Stats"].map((label, i) => (
               <span key={label} className="flex items-center gap-3 px-4 py-3 text-on-surface-variant/40 cursor-not-allowed" title="Coming soon">
-                <Icon name={["bracket", "chart", "flag"][i]} />
+                <Icon name={["bracket", "flag"][i]} />
                 <span className="font-label-caps text-label-caps">{label}</span>
               </span>
             ))}
@@ -86,15 +92,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <a className="flex flex-col items-center justify-center text-primary-container scale-110 transition-transform" href="/">
           <Icon name="globe" /><span className="font-label-caps text-[10px] mt-1 uppercase">World Cup</span>
         </a>
-        <a className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 active:scale-90 transition-transform" href="#markets">
+        <a className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 active:scale-90 transition-transform" href="/leaderboard">
+          <Icon name="chart" /><span className="font-label-caps text-[10px] mt-1 uppercase">Ranks</span>
+        </a>
+        <a className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 active:scale-90 transition-transform" href="/#markets">
           <Icon name="live" /><span className="font-label-caps text-[10px] mt-1 uppercase">Live</span>
         </a>
-        <span className="flex flex-col items-center justify-center text-on-surface-variant/40" title="Coming soon">
-          <Icon name="bracket" /><span className="font-label-caps text-[10px] mt-1 uppercase">Bracket</span>
-        </span>
-        <span className="flex flex-col items-center justify-center text-on-surface-variant/40" title="Coming soon">
-          <Icon name="user" /><span className="font-label-caps text-[10px] mt-1 uppercase">Profile</span>
-        </span>
+        <a className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 active:scale-90 transition-transform" href="/portfolio">
+          <Icon name="user" /><span className="font-label-caps text-[10px] mt-1 uppercase">Portfolio</span>
+        </a>
       </nav>
     </>
   );

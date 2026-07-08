@@ -101,9 +101,9 @@ export function MarketCard({ m }: { m: MarketLive }) {
           <Icon name="users" size={13} />
           <span>{m.bettors.toLocaleString()} Predictors</span>
         </div>
-        <span className="text-[10px] text-primary-container font-label-caps uppercase radical-velocity-italic">
-          {m.winningOutcome !== undefined ? "Settled on-chain" : "TxODDS verified"}
-        </span>
+        <a href={`/match?id=${m.fixtureId}`} className="text-[10px] text-primary-container font-label-caps uppercase radical-velocity-italic hover:underline">
+          {m.winningOutcome !== undefined ? "Settled ✓ · details" : "Match center →"}
+        </a>
       </div>
     </div>
   );

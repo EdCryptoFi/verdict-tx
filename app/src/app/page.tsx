@@ -1,56 +1,12 @@
 "use client";
 
-import type { MarketLive } from "@verdict/shared";
 import { MarketCard } from "@/components/MarketCard";
 import { useLiveMarkets } from "@/lib/useLiveMarkets";
 import { Icon } from "@/components/Icon";
-
-// Real 2026 World Cup fixtures from the TxODDS API. Mexico v England is a real finished match
-// (2–3) whose market we settled on-chain via CPI into TxODDS validate_stat.
-const DEMO: MarketLive[] = [
-  {
-    fixtureId: 18192996,
-    home: "Mexico",
-    away: "England",
-    homeFlag: "🇲🇽",
-    awayFlag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-    status: "final",
-    liveScore: [2, 3],
-    matchMinute: 90,
-    closeTs: Date.now() - 60_000,
-    poolUsdc: 30,
-    bettors: 2,
-    momentumHome: 0.35,
-    winningOutcome: 2, // Away (England) — settled on-chain
-    outcomes: [
-      { label: "Home", odds: 2.4 },
-      { label: "Draw", odds: 3.1 },
-      { label: "Away", odds: 2.7 },
-    ],
-  },
-  {
-    fixtureId: 18198205,
-    home: "Portugal",
-    away: "Spain",
-    homeFlag: "🇵🇹",
-    awayFlag: "🇪🇸",
-    status: "upcoming",
-    liveScore: [0, 0],
-    matchMinute: 0,
-    closeTs: Date.now() + 3 * 24 * 60 * 60 * 1000,
-    poolUsdc: 0,
-    bettors: 0,
-    momentumHome: 0.5,
-    outcomes: [
-      { label: "Home", odds: 2.15 },
-      { label: "Draw", odds: 3.0 },
-      { label: "Away", odds: 3.2 },
-    ],
-  },
-];
+import { DEMO_MARKETS } from "@/lib/demoMarkets";
 
 export default function Home() {
-  const { markets, live } = useLiveMarkets(DEMO);
+  const { markets, live } = useLiveMarkets(DEMO_MARKETS);
 
   return (
     <main className="pt-16 lg:pl-64 pb-24 lg:pb-0">
