@@ -9,6 +9,11 @@ import { placeBet, claim, fetchPosition, type PositionView } from "@/lib/actions
 
 const UNIT = 10 ** USDC_DECIMALS;
 
+/**
+ * The market's "Victory Odds" grid doubles as the bet selector: click an outcome, enter an
+ * amount, place a real on-chain bet. Shows the connected wallet's position and a claim button
+ * once the market is settled.
+ */
 export function BetBox({ m }: { m: MarketLive }) {
   const program = useProgram();
   const { publicKey } = useWallet();
@@ -23,26 +28,19 @@ export function BetBox({ m }: { m: MarketLive }) {
 
   const refresh = useCallback(async () => {
     if (!program || !publicKey) return setPosition(null);
-    setPosition(await fetchPosition(program, m.fixtureId, publicKey));
+    try {
+      setPosition(await fetchPosition(program, m.fixtureId, publicKey));
+    } catch {
+      setPosition(null);
+    }
   }, [program, publicKey, m.fixtureId]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
-  if (!publicKey) {
-    return <p className="text-center text-xs text-on-surface-variant font-label-caps">Connect a wallet to bet</p>;
-  }
-  if (!mint) {
-    return (
-      <p className="text-center text-xs text-on-surface-variant font-label-caps">
-        Set NEXT_PUBLIC_USDC_MINT to enable betting
-      </p>
-    );
-  }
-
   const onBet = async () => {
-    if (!program || selected === null) return;
+    if (!program || selected === null || !mint) return;
     setBusy(true);
     setMsg(null);
     try {
@@ -59,7 +57,7 @@ export function BetBox({ m }: { m: MarketLive }) {
   };
 
   const onClaim = async () => {
-    if (!program) return;
+    if (!program || !mint) return;
     setBusy(true);
     setMsg(null);
     try {
@@ -77,72 +75,100 @@ export function BetBox({ m }: { m: MarketLive }) {
   const hasWinningStake = resolved && (myStakes[m.winningOutcome!] ?? 0) > 0;
 
   return (
-    <div>
-      {/* Your position */}
+    <div className="px-6 pb-4 relative z-10">
+      <h4 className="font-label-caps text-[10px] text-on-surface-variant mb-3 uppercase tracking-widest">
+        Victory Odds
+      </h4>
+
+      {/* Outcome / odds selector */}
+      <div className="grid grid-cols-3 gap-2">
+        {m.outcomes.map((o, i) => {
+          const isSel = selected === i;
+          const won = m.winningOutcome === i;
+          return (
+            <button
+              key={o.label}
+              onClick={() => !resolved && setSelected(isSel ? null : i)}
+              disabled={resolved}
+              className="group flex flex-col items-center p-3 border bg-background/50 transition-all disabled:cursor-default"
+              style={{
+                borderColor: won
+                  ? "var(--color-primary-fixed-dim)"
+                  : isSel
+                    ? "var(--color-primary-container)"
+                    : "var(--color-metallic-gray)",
+                background: won
+                  ? "rgba(0,230,57,0.08)"
+                  : isSel
+                    ? "rgba(0,255,65,0.08)"
+                    : "rgba(19,19,19,0.5)",
+                boxShadow: isSel ? "0 0 12px rgba(0,255,65,0.25)" : "none",
+              }}
+            >
+              <span className="font-label-caps text-[9px] text-on-surface-variant mb-1 uppercase">
+                {o.label.toUpperCase()} {won && "🏆"}
+              </span>
+              <span className="font-data-numeric text-primary-container text-headline-lg-mobile group-hover:scale-110 transition-transform italic">
+                {o.odds.toFixed(2)}x
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Position readout */}
       {myStakes.some((s) => s > 0) && (
-        <div className="mb-2 text-xs text-on-surface-variant font-label-caps">
-          your position:{" "}
+        <div className="mt-3 text-[10px] text-on-surface-variant font-label-caps uppercase tracking-wide">
+          Your stake:{" "}
           {m.outcomes
-            .map((o, i) => (myStakes[i] > 0 ? `${(myStakes[i] / UNIT).toLocaleString()} on ${o.label}` : null))
+            .map((o, i) => (myStakes[i] > 0 ? `${(myStakes[i] / UNIT).toLocaleString()} ${o.label}` : null))
             .filter(Boolean)
             .join(" · ")}
           {position?.claimed && " · claimed ✓"}
         </div>
       )}
 
-      {/* Claim (resolved winners) */}
-      {resolved ? (
-        hasWinningStake && !position?.claimed ? (
-          <button
-            onClick={onClaim}
-            disabled={busy}
-            className="w-full px-3 py-2 text-sm font-bold font-label-caps text-on-primary bg-primary-fixed-dim disabled:opacity-50"
-          >
-            {busy ? "…" : "🏆 Claim winnings"}
-          </button>
-        ) : (
-          <p className="text-center text-xs text-on-surface-variant font-label-caps">
-            {m.status === "final" ? "market settled" : "awaiting settlement"}
+      {/* Action row */}
+      <div className="mt-3">
+        {!publicKey ? (
+          <p className="text-center text-[10px] text-on-surface-variant font-label-caps uppercase tracking-widest">
+            Connect wallet to predict
           </p>
-        )
-      ) : (
-        <>
-          <div className="mb-2 grid grid-cols-3 gap-2">
-            {m.outcomes.map((o, i) => (
-              <button
-                key={o.label}
-                onClick={() => setSelected(i)}
-                className="px-2 py-1.5 text-xs font-semibold radical-velocity-italic transition-all"
-                style={{
-                  border: `1px solid ${selected === i ? "var(--color-primary-container)" : "var(--color-metallic-gray)"}`,
-                  background: selected === i ? "rgba(0,255,65,0.12)" : "rgba(0,0,0,0.3)",
-                  color: selected === i ? "var(--color-primary-container)" : "var(--color-on-surface-variant)",
-                }}
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
+        ) : resolved ? (
+          hasWinningStake && !position?.claimed ? (
+            <button
+              onClick={onClaim}
+              disabled={busy}
+              className="w-full py-3 bg-primary-fixed-dim text-on-primary-fixed font-label-caps text-label-caps font-black uppercase italic disabled:opacity-50"
+            >
+              {busy ? "…" : "🏆 Claim winnings"}
+            </button>
+          ) : (
+            <p className="text-center text-[10px] text-on-surface-variant font-label-caps uppercase tracking-widest">
+              {position?.claimed ? "settled ✓" : "market settled"}
+            </p>
+          )
+        ) : (
           <div className="flex gap-2">
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               inputMode="decimal"
-              className="tnum w-full border border-metallic-gray bg-background/50 px-3 py-2 text-sm text-on-surface font-data-numeric focus:outline-none focus:border-primary-container"
-              placeholder="amount (USDC)"
+              className="tnum w-full border border-metallic-gray bg-background/60 px-3 py-2 text-sm text-on-surface font-data-numeric focus:outline-none focus:border-secondary-container"
+              placeholder="USDC"
             />
             <button
               onClick={onBet}
               disabled={busy || selected === null}
-              className="px-4 py-2 text-sm font-bold font-label-caps text-on-primary bg-primary-container disabled:opacity-40"
+              className="px-5 py-2 bg-primary-container text-on-primary-container font-label-caps text-label-caps font-black uppercase disabled:opacity-40 active:scale-95 transition-transform"
             >
               {busy ? "…" : "Bet"}
             </button>
           </div>
-        </>
-      )}
+        )}
+      </div>
 
-      {msg && <p className="mt-2 break-words text-xs text-on-surface-variant font-label-caps">{msg}</p>}
+      {msg && <p className="mt-2 break-words text-[10px] text-on-surface-variant font-label-caps">{msg}</p>}
     </div>
   );
 }

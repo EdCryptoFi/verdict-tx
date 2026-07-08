@@ -9,7 +9,8 @@
 import type { Fixture, ScoresStatValidation } from "./txodds.js";
 
 // Placeholder stat keys/period — confirm real World Cup goal keys with TxODDS.
-export const STAT = { HOME_GOALS: 1, AWAY_GOALS: 2, FULL_TIME: 0 };
+// Real TxODDS score stat keys: 1 = home (Participant1) goals, 2 = away goals; period 4 = full-time.
+export const STAT = { HOME_GOALS: 1, AWAY_GOALS: 2, FULL_TIME: 4 };
 
 export function mockFixtures(): Fixture[] {
   return [
