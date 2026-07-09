@@ -15,9 +15,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Top nav */}
       <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 bg-background/80 backdrop-blur-md border-b border-metallic-gray shadow-[0_0_15px_rgba(0,255,65,0.1)]">
         <div className="flex items-center gap-8">
-          <span className="font-display-hero text-headline-lg-mobile md:text-headline-lg italic text-primary-fixed-dim tracking-tighter">
-            VERDICT
-          </span>
+          <a href="/" className="flex flex-col leading-none">
+            <span className="font-display-hero text-headline-lg-mobile md:text-headline-lg italic tracking-tighter flex items-center gap-1">
+              <span className="text-on-surface">VERDICT</span>
+              <span className="text-primary-container border border-primary-container px-1 not-italic text-headline-lg-mobile">TX</span>
+            </span>
+            <span className="hidden md:block font-label-caps text-[8px] text-on-surface-variant/70 uppercase tracking-[0.2em] mt-0.5">Predict the game. Own the outcome.</span>
+          </a>
           <div className="hidden md:flex gap-6 items-center">
             <a className="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container py-1 transition-all" href="/">Markets</a>
             <a className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary-container transition-colors" href="/portfolio">Portfolio</a>
