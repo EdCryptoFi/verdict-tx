@@ -45,7 +45,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-3">
               <a href="#markets" className="flex items-center gap-2 bg-primary-container text-on-primary-container px-7 py-4 font-label-caps text-label-caps font-black uppercase hover:scale-105 transition-all shadow-[0_0_25px_rgba(207,243,1,0.35)]">
-                View markets <Icon name="live" size={14} />
+                View markets <Icon name="arrowRight" size={14} />
               </a>
               <a href="#how" className="border-2 border-primary-container text-primary-container px-7 py-4 font-label-caps text-label-caps italic uppercase hover:bg-primary-container/10 transition-colors">
                 How it works
@@ -112,7 +112,7 @@ export default function Home() {
                   Markets resolve by CPI into TxODDS&apos; own <span className="font-data-numeric text-primary-container">validate_stat</span>, which verifies the score against their on-chain Merkle root. No trusted admin. No oracle key.
                 </p>
                 <a href="https://txline-docs.txodds.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-primary-container text-on-primary-container px-6 py-3 font-label-caps text-label-caps font-black uppercase italic hover:brightness-110 transition-all">
-                  See how it works <Icon name="live" size={14} />
+                  See how it works <Icon name="arrowRight" size={14} />
                 </a>
               </div>
             </div>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { VolumeStat } from "@/components/VolumeStat";
 import { Icon } from "@/components/Icon";
+import { WalletButton } from "@/components/WalletButton";
 
 const HOT = [
   {
@@ -78,18 +79,11 @@ export default function Welcome() {
             Markets
             <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary-container rounded-full" />
           </a>
-          {[["Leaderboard", "/leaderboard"], ["How it works", "#how"], ["About", "https://txline-docs.txodds.com"]].map(([l, h]) => (
+          {[["Leaderboard", "/leaderboard"], ["How it works", "/#how"], ["About", "https://txline-docs.txodds.com"]].map(([l, h]) => (
             <a key={l} href={h} className="text-on-surface hover:text-primary-container transition-colors">{l}</a>
           ))}
         </div>
-        <motion.a
-          href="/"
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 rounded-lg border border-primary-container text-primary-container px-5 py-2.5 font-label-caps text-label-caps uppercase hover:bg-primary-container hover:text-on-primary-container transition-colors"
-        >
-          Connect Wallet <Icon name="wallet" size={16} />
-        </motion.a>
+        <WalletButton />
       </nav>
 
       {/* Hero */}
@@ -261,7 +255,7 @@ export default function Welcome() {
       </section>
 
       {/* Footer */}
-      <footer id="how" className="relative z-10 px-margin-mobile md:px-margin-desktop py-7 border-t border-metallic-gray/30 flex flex-col lg:flex-row items-center justify-between gap-6">
+      <footer className="relative z-10 px-margin-mobile md:px-margin-desktop py-7 border-t border-metallic-gray/30 flex flex-col lg:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <Wordmark small />
           <span className="font-label-caps text-[9px] text-on-surface-variant uppercase tracking-widest">Built for fans. Backed by blockchain.</span>
@@ -273,11 +267,11 @@ export default function Welcome() {
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-4 text-on-surface-variant">
+        <div className="flex items-center gap-4 text-on-surface-variant/40">
           {(["discord", "x", "telegram"] as const).map((s) => (
-            <motion.a key={s} href="#" whileHover={{ scale: 1.15, color: "#cff301" }} className="transition-colors">
+            <span key={s} title="Coming soon" className="cursor-not-allowed">
               <Icon name={s} size={18} />
-            </motion.a>
+            </span>
           ))}
         </div>
       </footer>

@@ -1,12 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Icon } from "./Icon";
-
-const WalletButton = dynamic(
-  () => import("@solana/wallet-adapter-react-ui").then((m) => m.WalletMultiButton),
-  { ssr: false }
-);
+import { WalletButton } from "./WalletButton";
 
 /** Full app chrome (Radical Velocity): top nav, desktop sidebar, mobile bottom nav, footer. */
 export function AppShell({ children }: { children: React.ReactNode }) {

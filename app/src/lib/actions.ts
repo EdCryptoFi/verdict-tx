@@ -1,7 +1,7 @@
 "use client";
 
 import { Program, BN } from "@coral-xyz/anchor";
-import { PublicKey, ComputeBudgetProgram } from "@solana/web3.js";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
@@ -72,6 +72,7 @@ export async function placeBet(
       vault,
       bettorTokenAccount: bettorAta,
       tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
     })
     .preInstructions(preIx)
     .rpc();
