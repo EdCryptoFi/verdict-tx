@@ -69,6 +69,47 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5z" />
     </>
   ),
+  wallet: (
+    <>
+      <path d="M3 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <path d="M16 12h4M16 12a1.5 1.5 0 1 0 0-.01" />
+    </>
+  ),
+  chevronRight: <path d="m9 6 6 6-6 6" />,
+  arrowRight: (
+    <>
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 3v12" />
+      <path d="m7 11 5 5 5-5" />
+      <path d="M4 20h16" />
+    </>
+  ),
+  lock: (
+    <>
+      <rect x="4" y="10" width="16" height="10" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  scale: (
+    <>
+      <path d="M12 3v18M7 7h10" />
+      <path d="m4 12 3-5 3 5a3 3 0 0 1-6 0zM14 12l3-5 3 5a3 3 0 0 1-6 0z" />
+    </>
+  ),
+  discord: (
+    <>
+      <path d="M8.5 9.5a9 9 0 0 1 7 0M7 17c-1.5-3-2-6 .5-9.5A12 12 0 0 1 12 6c1.6 0 3.2.2 4.5 1.5C19 11 18.5 14 17 17c-1 .8-2.3 1.3-3.5 1.5l-.7-1.3M7 17c1 .8 2.3 1.3 3.5 1.5l.7-1.3" />
+      <circle cx="9.5" cy="13" r="1" />
+      <circle cx="14.5" cy="13" r="1" />
+    </>
+  ),
+  x: <path d="M4 4l16 16M20 4 4 20" />,
+  telegram: <path d="M21 4 3 11l5 2 2 6 3-4 5 3z" />,
 };
 
 export function Icon({ name, size = 18, ...props }: { name: keyof typeof paths | string; size?: number } & SVGProps<SVGSVGElement>) {

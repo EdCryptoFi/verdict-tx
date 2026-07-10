@@ -25,7 +25,7 @@ export default function Home() {
         <img
           alt=""
           src="/art/hero-trophy.png"
-          className="hidden lg:block absolute right-[24%] top-1/2 -translate-y-1/2 h-[118%] w-auto object-contain z-[1] pointer-events-none select-none mix-blend-lighten"
+          className="hidden lg:block absolute right-[24%] top-1/2 -translate-y-1/2 h-[118%] w-auto object-contain z-[1] pointer-events-none select-none"
         />
 
         <div className="relative z-10 px-margin-mobile md:px-margin-desktop py-12 md:py-16">
@@ -100,7 +100,7 @@ export default function Home() {
             {/* Verifiable Settlement bento with player art */}
             <div id="how" className="relative overflow-hidden border-2 border-primary-container min-h-[400px] flex flex-col justify-end shadow-[0_0_30px_rgba(207,243,1,0.1)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" src="/art/player.png" className="absolute right-0 top-0 h-full w-auto object-cover object-right opacity-90 mix-blend-lighten pointer-events-none" />
+              <img alt="" src="/art/player.png" className="absolute right-0 top-0 h-full w-auto object-cover object-right opacity-90 pointer-events-none" />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 to-background/30" />
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
               <div className="relative z-10 p-8">

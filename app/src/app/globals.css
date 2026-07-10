@@ -116,6 +116,32 @@ body {
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
 }
 
+/* Art cropped from the reference mockups sits on near-black; screen blending drops the black. */
+.art-blend {
+  mix-blend-mode: screen;
+}
+
+/* Fine film grain over the whole page for graphic depth. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.lime-glow {
+  box-shadow: 0 0 40px rgba(207, 243, 1, 0.12), inset 0 0 0 1px rgba(207, 243, 1, 0.12);
+}
+
+.skew-cta {
+  transform: skewX(-8deg);
+}
+.skew-cta > * {
+  transform: skewX(8deg);
+}
+
 .scanline {
   background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 65, 0.05) 50%);
   background-size: 100% 4px;
