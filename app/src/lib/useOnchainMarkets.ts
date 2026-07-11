@@ -99,7 +99,9 @@ export function applyChainState(markets: MarketLive[], chain: Map<number, ChainM
         ...o,
         odds: c.poolPerOutcome[i] > 0 ? c.totalPool / c.poolPerOutcome[i] : 0,
       })),
-      winningOutcome: c.status === "resolved" ? c.winningOutcome : m.winningOutcome,
+      // "refunded" is terminal too — the program takes that path when nobody staked the winning
+      // outcome. Either way the market is settled and must stop accepting bets.
+      winningOutcome: c.status === "open" ? m.winningOutcome : c.winningOutcome,
     };
   });
 }
