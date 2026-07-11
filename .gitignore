@@ -28,3 +28,4 @@ out/
 # Misc
 coverage/
 .turbo/
+.vercel
