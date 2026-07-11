@@ -1,16 +1,21 @@
+/**
+ * Indexer entrypoint. Keeps the frontend's markets in sync:
+ *   - LIVE mode (TxODDS creds present): polls real World Cup fixtures + scores from TxODDS.
+ *   - MOCK mode (no creds): simulates matches so the demo still moves.
+ */
 import { config } from "./config.js";
 import { MarketStore } from "./store.js";
 import { startServer } from "./server.js";
 import { startMockSimulator } from "./mockSimulator.js";
-import { startLiveFeed } from "./liveFeed.js";
+import { startRealFeed } from "./realFeed.js";
 
 const store = new MarketStore();
 startServer(store, config.port);
 
-if (config.txodds.mock) {
-  console.log("indexer mode: MOCK (simulating live matches)");
-  startMockSimulator(store);
+const live = startRealFeed(store);
+if (live) {
+  console.log("indexer mode: LIVE (real TxODDS fixtures + scores)");
 } else {
-  console.log("indexer mode: LIVE (TxODDS SSE)");
-  startLiveFeed(store);
+  console.log("indexer mode: MOCK (no TxODDS creds — simulating matches)");
+  startMockSimulator(store);
 }
