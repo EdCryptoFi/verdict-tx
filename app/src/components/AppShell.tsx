@@ -50,12 +50,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/leaderboard">
               <Icon name="chart" /><span className="font-label-caps text-label-caps">Leaderboard</span>
             </a>
-            {["Tournament Bracket", "Squad Stats"].map((label, i) => (
-              <span key={label} className="flex items-center gap-3 px-4 py-3 text-on-surface-variant/40 cursor-not-allowed" title="Coming soon">
-                <Icon name={["bracket", "flag"][i]} />
-                <span className="font-label-caps text-label-caps">{label}</span>
-              </span>
-            ))}
+            <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/#how">
+              <Icon name="verified" /><span className="font-label-caps text-label-caps">How it works</span>
+            </a>
           </nav>
           <div className="mt-8 pt-8 border-t border-metallic-gray">
             <div className="w-full py-3 px-4 border border-metallic-gray/60 text-on-surface-variant/60 italic font-label-caps text-[10px] uppercase tracking-widest text-center">
@@ -81,9 +78,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             © 2026 Verdict · FIFA World Cup Edition · Solana
           </p>
         </div>
-        <p className="font-label-caps text-[10px] text-on-tertiary-fixed-variant tracking-widest uppercase">
-          Verifiable settlement · powered by TxODDS
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="font-label-caps text-[10px] text-on-tertiary-fixed-variant tracking-widest uppercase">
+            Verifiable settlement · powered by TxODDS
+          </p>
+          <a href="https://x.com/EdCriptoFi" target="_blank" rel="noreferrer" className="font-label-caps text-[10px] text-on-surface-variant hover:text-primary-container tracking-widest uppercase transition-colors flex items-center gap-1.5">
+            <Icon name="x" size={12} /> Created by Ed
+          </a>
+        </div>
       </footer>
 
       {/* Mobile bottom nav */}

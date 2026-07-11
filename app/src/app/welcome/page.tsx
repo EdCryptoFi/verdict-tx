@@ -267,12 +267,17 @@ export default function Welcome() {
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-4 text-on-surface-variant/40">
-          {(["discord", "x", "telegram"] as const).map((s) => (
-            <span key={s} title="Coming soon" className="cursor-not-allowed">
-              <Icon name={s} size={18} />
-            </span>
-          ))}
+        <div className="flex items-center gap-5">
+          <a href="https://x.com/EdCriptoFi" target="_blank" rel="noreferrer" className="flex items-center gap-2 font-label-caps text-[9px] text-on-surface-variant hover:text-primary-container uppercase tracking-widest transition-colors">
+            <Icon name="x" size={14} /> Created by Ed
+          </a>
+          <span className="flex items-center gap-3 text-on-surface-variant/40">
+            {(["discord", "telegram"] as const).map((s) => (
+              <span key={s} title="Coming soon" className="cursor-not-allowed">
+                <Icon name={s} size={16} />
+              </span>
+            ))}
+          </span>
         </div>
       </footer>
     </div>
