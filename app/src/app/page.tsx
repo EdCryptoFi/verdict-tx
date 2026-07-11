@@ -5,9 +5,12 @@ import { useLiveMarkets } from "@/lib/useLiveMarkets";
 import { Icon } from "@/components/Icon";
 import { VolumeCard } from "@/components/VolumeCard";
 import { DEMO_MARKETS } from "@/lib/demoMarkets";
+import { useOnchainMarkets, applyChainState } from "@/lib/useOnchainMarkets";
 
 export default function Home() {
-  const { markets, live } = useLiveMarkets(DEMO_MARKETS);
+  const { markets: feed, live } = useLiveMarkets(DEMO_MARKETS);
+  const { chain, refresh } = useOnchainMarkets();
+  const markets = applyChainState(feed, chain);
 
   return (
     <main className="pt-16 lg:pl-64">
@@ -91,7 +94,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {markets.map((m) => (
-              <MarketCard key={m.fixtureId} m={m} />
+              <MarketCard key={m.fixtureId} m={m} onChainUpdate={refresh} />
             ))}
 
             {/* Verifiable Settlement bento with player art */}

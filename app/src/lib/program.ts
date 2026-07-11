@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
+import { PublicKey, type Connection } from "@solana/web3.js";
 import { useConnection, useAnchorWallet } from "@solana/wallet-adapter-react";
 import { pitchmarketIdl, type Pitchmarket } from "@verdict/shared";
 
@@ -14,6 +15,20 @@ export function useProgram(): Program<Pitchmarket> | null {
     const provider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
     return new Program<Pitchmarket>(pitchmarketIdl as Pitchmarket, provider);
   }, [connection, wallet]);
+}
+
+/**
+ * Read-only Program for fetching market state without a wallet. Reading accounts only touches
+ * provider.connection, so a stub wallet is enough — any attempt to sign throws by design.
+ */
+export function readonlyProgram(connection: Connection): Program<Pitchmarket> {
+  const stub = {
+    publicKey: PublicKey.default,
+    signTransaction: () => Promise.reject(new Error("read-only provider")),
+    signAllTransactions: () => Promise.reject(new Error("read-only provider")),
+  };
+  const provider = new AnchorProvider(connection, stub as never, { commitment: "confirmed" });
+  return new Program<Pitchmarket>(pitchmarketIdl as Pitchmarket, provider);
 }
 
 /**

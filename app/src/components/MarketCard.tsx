@@ -6,7 +6,7 @@ import { Countdown } from "./Countdown";
 import { BetBox } from "./BetBox";
 import { Icon } from "./Icon";
 
-export function MarketCard({ m }: { m: MarketLive }) {
+export function MarketCard({ m, onChainUpdate }: { m: MarketLive; onChainUpdate?: () => void }) {
   const final = m.status === "final";
   const upcoming = m.status === "upcoming";
   const homePct = Math.round(m.momentumHome * 100);
@@ -81,12 +81,19 @@ export function MarketCard({ m }: { m: MarketLive }) {
       </div>
 
       {/* Victory Odds + bet/claim (real on-chain) */}
-      <BetBox m={m} />
+      <BetBox m={m} onChainUpdate={onChainUpdate} />
 
       {/* Momentum / pool bar */}
       <div className="px-6 pb-4 relative z-10">
         <div className="flex justify-between font-label-caps text-[9px] text-on-surface-variant mb-1 italic uppercase">
-          <span>Tournament Pool</span>
+          <span className="flex items-center gap-1.5">
+            Tournament Pool
+            {m.onChain && (
+              <span className="text-primary-container/70 not-italic" title="Live market account on Solana devnet">
+                · on-chain
+              </span>
+            )}
+          </span>
           <span className="text-primary-container">{m.poolUsdc.toLocaleString()} USDC</span>
         </div>
         <div className="h-1.5 w-full bg-surface-variant overflow-hidden flex">

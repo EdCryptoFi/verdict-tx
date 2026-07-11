@@ -14,7 +14,8 @@ const UNIT = 10 ** USDC_DECIMALS;
  * amount, place a real on-chain bet. Shows the connected wallet's position and a claim button
  * once the market is settled.
  */
-export function BetBox({ m }: { m: MarketLive }) {
+/** `onChainUpdate` lets the parent re-read the market account after a bet/claim moves the pool. */
+export function BetBox({ m, onChainUpdate }: { m: MarketLive; onChainUpdate?: () => void }) {
   const program = useProgram();
   const { publicKey } = useWallet();
   const [selected, setSelected] = useState<number | null>(null);
@@ -49,6 +50,7 @@ export function BetBox({ m }: { m: MarketLive }) {
       setMsg(`✅ bet placed · ${sig.slice(0, 8)}…`);
       setSelected(null);
       await refresh();
+      onChainUpdate?.(); // the stake just changed the pool → re-read the odds
     } catch (e: any) {
       setMsg(`⚠ ${e.message ?? e}`);
     } finally {
@@ -109,7 +111,7 @@ export function BetBox({ m }: { m: MarketLive }) {
                 {o.label.toUpperCase()} {won && "🏆"}
               </span>
               <span className="font-data-numeric text-primary-container text-headline-lg-mobile group-hover:scale-110 transition-transform italic">
-                {o.odds.toFixed(2)}x
+                {o.odds > 0 ? `${o.odds.toFixed(2)}x` : "—"}
               </span>
             </button>
           );

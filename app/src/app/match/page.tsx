@@ -7,12 +7,15 @@ import { SettlementTheater } from "@/components/SettlementTheater";
 import { Countdown } from "@/components/Countdown";
 import { DEMO_MARKETS } from "@/lib/demoMarkets";
 import { useLiveMarkets } from "@/lib/useLiveMarkets";
+import { useOnchainMarkets, applyChainState } from "@/lib/useOnchainMarkets";
 
 function MatchView() {
   const params = useSearchParams();
   const id = Number(params.get("id"));
   const { markets } = useLiveMarkets(DEMO_MARKETS);
-  const m = markets.find((x) => x.fixtureId === id) ?? DEMO_MARKETS.find((x) => x.fixtureId === id) ?? DEMO_MARKETS[0];
+  const { chain, refresh } = useOnchainMarkets();
+  const live = applyChainState(markets, chain);
+  const m = live.find((x) => x.fixtureId === id) ?? live.find((x) => x.fixtureId === DEMO_MARKETS[0].fixtureId) ?? live[0];
   const final = m.status === "final";
   const upcoming = m.status === "upcoming";
 
@@ -62,7 +65,7 @@ function MatchView() {
           <div className="pt-5">
             <h3 className="px-6 font-headline-lg-mobile italic uppercase text-primary-container mb-1">Place your prediction</h3>
             <p className="px-6 text-[11px] text-on-surface-variant mb-2">Pari-mutuel 1X2 · 1% protocol fee · pooled payouts</p>
-            <BetBox m={m} />
+            <BetBox m={m} onChainUpdate={refresh} />
           </div>
         </div>
         <SettlementTheater m={m} />
