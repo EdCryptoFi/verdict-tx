@@ -44,4 +44,8 @@ pub enum PitchError {
     OracleValidationFailed,
     #[msg("Arithmetic overflow")]
     MathOverflow,
+    #[msg("Fee destination must be owned by the market authority")]
+    InvalidFeeDestination,
+    #[msg("Account does not match the market's settlement mint")]
+    InvalidMint,
 }

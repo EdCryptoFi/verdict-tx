@@ -438,6 +438,38 @@ export type Pitchmarket = {
           "writable": true
         },
         {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "feeDestination",
+          "docs": [
+            "Where the protocol fee is raked to. Pinned to the market's stored authority and mint, so a",
+            "cranker cannot redirect the fee to themselves. Checked by constraint rather than created",
+            "here on demand: `init_if_needed` would drag in the mint, ATA and system programs, and the",
+            "Merkle proofs leave no room for them inside the 1232-byte transaction limit."
+          ],
+          "writable": true
+        },
+        {
           "name": "txoddsProgram",
           "address": "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J"
         },
@@ -446,6 +478,10 @@ export type Pitchmarket = {
           "docs": [
             "program so a caller cannot substitute a forged roots account."
           ]
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
       ],
       "args": [
@@ -639,6 +675,16 @@ export type Pitchmarket = {
       "code": 6020,
       "name": "mathOverflow",
       "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6021,
+      "name": "invalidFeeDestination",
+      "msg": "Fee destination must be owned by the market authority"
+    },
+    {
+      "code": 6022,
+      "name": "invalidMint",
+      "msg": "Account does not match the market's settlement mint"
     }
   ],
   "types": [

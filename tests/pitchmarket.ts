@@ -165,6 +165,8 @@ describe("pitchmarket", () => {
       .accountsPartial({
         cranker: admin.publicKey,
         market,
+        vault: vaultPda(market),
+        feeDestination: await ata(admin.publicKey),
         txoddsProgram: TXODDS,
         dailyScoresMerkleRoots: roots,
       })
@@ -228,7 +230,12 @@ describe("pitchmarket", () => {
     assert.equal(Object.keys(m.status)[0], "resolved");
     assert.equal(m.winningOutcome, OUT.Home);
 
-    // Each Home winner: gross = 100*300/200 = 150, fee 1% → net 148.5.
+    // The 1% fee is raked off the top at settlement and actually lands in the authority's account,
+    // so it can never be stranded in the vault. total_pool is then the net pool winners split.
+    assert.equal(m.totalPool.toNumber(), 297 * UNIT, "pool should be net of the 1% fee");
+    assert.equal(await balance(admin.publicKey), 3 * UNIT, "fee should be in the authority's ATA");
+
+    // Each Home winner: 100/200 of the 297 net pool = 148.5.
     const a0 = await balance(A.publicKey);
     await claim(f, A);
     assert.equal((await balance(A.publicKey)) - a0, 148.5 * UNIT);
@@ -286,7 +293,14 @@ describe("pitchmarket", () => {
     try {
       await program.methods
         .resolve(OUT.Away, new BN(Date.now()), fixtureSummary(f), dummyProof, dummyProof, statTerm(HOME_KEY, 2), statTerm(AWAY_KEY, 1))
-        .accountsPartial({ cranker: admin.publicKey, market, txoddsProgram: TXODDS, dailyScoresMerkleRoots: roots })
+        .accountsPartial({
+          cranker: admin.publicKey,
+          market,
+          vault: vaultPda(market),
+          feeDestination: await ata(admin.publicKey),
+          txoddsProgram: TXODDS,
+          dailyScoresMerkleRoots: roots,
+        })
         .preInstructions([anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({ units: 600_000 })])
         .rpc();
     } catch (e: any) {

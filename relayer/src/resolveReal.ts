@@ -3,9 +3,10 @@
  * fetch the score Merkle proof, decide the winner, and submit `resolve`, which CPIs into the real
  * TxODDS `validate_stat`. The `ts` arg + daily_scores_roots PDA both use summary.minTimestamp.
  */
-import { Keypair, ComputeBudgetProgram } from "@solana/web3.js";
+import { Keypair, ComputeBudgetProgram, PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
-import { Outcome1X2, dailyScoresRootsPda, marketPda, MarketKind, TXODDS_PROGRAM_ID } from "@verdict/shared";
+import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
+import { Outcome1X2, dailyScoresRootsPda, marketPda, vaultPda, MarketKind, TXODDS_PROGRAM_ID } from "@verdict/shared";
 import { getProgram } from "./program.js";
 import { txodds } from "./txoddsData.js";
 
@@ -19,9 +20,25 @@ const st = (root: any) => (s: any, proof: any[]) => ({
 });
 
 /** Resolve fixtureId's market using the score at sequence `seq`. Throws if the proof isn't final yet. */
-export async function resolveMarketReal(cranker: Keypair, fixtureId: number, seq: number): Promise<string> {
+export async function resolveMarketReal(
+  cranker: Keypair,
+  fixtureId: number,
+  seq: number,
+  kind: number = MarketKind.FullTime1X2
+): Promise<string> {
   const program = getProgram(cranker);
-  const [market] = marketPda(BigInt(fixtureId), MarketKind.FullTime1X2);
+  const [market] = marketPda(BigInt(fixtureId), kind);
+  const [vault] = vaultPda(market);
+
+  // The protocol fee is raked at settlement into the authority's ATA. `resolve` only *checks* that
+  // account (the Merkle proofs leave no room to create it inline), so make sure it exists first —
+  // a separate, cheap transaction that costs the resolve tx nothing in size.
+  const onchain = await program.account.market.fetch(market);
+  const mint = onchain.mint as PublicKey;
+  const authority = onchain.authority as PublicKey;
+  const feeDestination = (
+    await getOrCreateAssociatedTokenAccount(program.provider.connection, cranker, mint, authority, true)
+  ).address;
 
   const v: any = await txodds.statValidation({ fixtureId, seq, statKey: HOME_KEY, statKey2: AWAY_KEY });
   const home = v.statToProve.value;
@@ -43,7 +60,14 @@ export async function resolveMarketReal(cranker: Keypair, fixtureId: number, seq
 
   return program.methods
     .resolve(winning, new BN(targetTs), fixtureSummary, pn(v.subTreeProof), pn(v.mainTreeProof), mk(v.statToProve, v.statProof), mk(v.statToProve2, v.statProof2 ?? v.statProof))
-    .accountsPartial({ cranker: cranker.publicKey, market, txoddsProgram: TXODDS_PROGRAM_ID, dailyScoresMerkleRoots: dailyScoresRoots })
+    .accountsPartial({
+      cranker: cranker.publicKey,
+      market,
+      vault,
+      feeDestination,
+      txoddsProgram: TXODDS_PROGRAM_ID,
+      dailyScoresMerkleRoots: dailyScoresRoots,
+    })
     .preInstructions([ComputeBudgetProgram.setComputeUnitLimit({ units: 1_000_000 })])
     .rpc();
 }

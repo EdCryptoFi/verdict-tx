@@ -20,6 +20,7 @@ import {
 } from "@verdict/shared";
 import { adminKeypair, connection, config } from "../config.js";
 import { getProgram } from "../program.js";
+import { resolveMarketReal } from "../resolveReal.js";
 import { txodds } from "../txoddsData.js";
 
 const HOME_KEY = 1, AWAY_KEY = 2, PERIOD_FT = 4;
@@ -31,7 +32,9 @@ const admin = adminKeypair();
 const program = getProgram(admin);
 const conn = connection();
 const mint = new PublicKey(config.usdcMint);
-const kind = MarketKind.FullTime1X2;
+// MARKET_KIND lets us open a fresh market PDA for a fixture that already has one (kind is part of
+// the seed), so the full flow can be re-proven against a real, already-finished match.
+const kind = Number(process.env.MARKET_KIND ?? MarketKind.FullTime1X2);
 const [market] = marketPda(BigInt(fixtureId), kind);
 const [vault] = vaultPda(market);
 const adminAta = (await getOrCreateAssociatedTokenAccount(conn, admin, mint, admin.publicKey)).address;
@@ -93,15 +96,25 @@ const fixtureSummary = {
 };
 
 const status = Object.keys((await program.account.market.fetch(market)).status)[0];
+const poolBefore = Number((await program.account.market.fetch(market)).totalPool.toString());
+const feeAcctBefore = Number((await getAccount(conn, adminAta)).amount);
+
 if (status === "open") {
-  await program.methods
-    .resolve(winning, new BN(targetTs), fixtureSummary, pn(v.subTreeProof), pn(v.mainTreeProof), st(v.statToProve, v.statProof), st(v.statToProve2, v.statProof2))
-    .accountsPartial({ cranker: admin.publicKey, market, txoddsProgram: TXODDS_PROGRAM_ID, dailyScoresMerkleRoots: dailyScoresRoots })
-    .preInstructions([ComputeBudgetProgram.setComputeUnitLimit({ units: 1_000_000 })])
-    .rpc();
+  // Same code path the daily sync uses — no duplicated resolve builder to drift out of sync.
+  await resolveMarketReal(admin, fixtureId, seq, kind);
 }
 const mr = await program.account.market.fetch(market);
+const poolAfter = Number(mr.totalPool.toString());
 console.log(`   ✅ market status=${Object.keys(mr.status)[0]} winningOutcome=${mr.winningOutcome}`);
+
+if (status === "open" && Object.keys(mr.status)[0] === "resolved") {
+  // The 1% protocol fee is raked off the top at settlement, straight into the authority's ATA.
+  const feeAcctAfter = Number((await getAccount(conn, adminAta)).amount);
+  console.log(
+    `   💰 fee raked: pool ${poolBefore / UNIT} → ${poolAfter / UNIT} USDC; ` +
+      `authority received ${(feeAcctAfter - feeAcctBefore) / UNIT} USDC`
+  );
+}
 
 // 5) Claim
 if (Object.keys(mr.status)[0] === "resolved") {

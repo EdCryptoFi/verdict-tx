@@ -432,6 +432,38 @@
           "writable": true
         },
         {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fee_destination",
+          "docs": [
+            "Where the protocol fee is raked to. Pinned to the market's stored authority and mint, so a",
+            "cranker cannot redirect the fee to themselves. Checked by constraint rather than created",
+            "here on demand: `init_if_needed` would drag in the mint, ATA and system programs, and the",
+            "Merkle proofs leave no room for them inside the 1232-byte transaction limit."
+          ],
+          "writable": true
+        },
+        {
           "name": "txodds_program",
           "address": "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J"
         },
@@ -440,6 +472,10 @@
           "docs": [
             "program so a caller cannot substitute a forged roots account."
           ]
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
       ],
       "args": [
@@ -633,6 +669,16 @@
       "code": 6020,
       "name": "MathOverflow",
       "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidFeeDestination",
+      "msg": "Fee destination must be owned by the market authority"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidMint",
+      "msg": "Account does not match the market's settlement mint"
     }
   ],
   "types": [

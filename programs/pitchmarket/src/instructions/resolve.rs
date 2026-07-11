@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 use crate::constants::*;
 use crate::error::PitchError;
@@ -20,6 +21,24 @@ pub struct Resolve<'info> {
     )]
     pub market: Account<'info, Market>,
 
+    #[account(
+        mut,
+        seeds = [VAULT_SEED, market.key().as_ref()],
+        bump = market.vault_bump,
+    )]
+    pub vault: Account<'info, TokenAccount>,
+
+    /// Where the protocol fee is raked to. Pinned to the market's stored authority and mint, so a
+    /// cranker cannot redirect the fee to themselves. Checked by constraint rather than created
+    /// here on demand: `init_if_needed` would drag in the mint, ATA and system programs, and the
+    /// Merkle proofs leave no room for them inside the 1232-byte transaction limit.
+    #[account(
+        mut,
+        constraint = fee_destination.owner == market.authority @ PitchError::InvalidFeeDestination,
+        constraint = fee_destination.mint == market.mint @ PitchError::InvalidMint,
+    )]
+    pub fee_destination: Account<'info, TokenAccount>,
+
     /// CHECK: must be the TxODDS program; verified by address.
     #[account(address = TXODDS_PROGRAM_ID @ PitchError::InvalidTxoddsProgram)]
     pub txodds_program: UncheckedAccount<'info>,
@@ -28,6 +47,8 @@ pub struct Resolve<'info> {
     /// program so a caller cannot substitute a forged roots account.
     #[account(owner = TXODDS_PROGRAM_ID @ PitchError::InvalidRootsAccount)]
     pub daily_scores_merkle_roots: UncheckedAccount<'info>,
+
+    pub token_program: Program<'info, Token>,
 }
 
 /// Resolve a market by proving the winning outcome's predicate against TxODDS' on-chain
@@ -114,8 +135,9 @@ pub fn resolve_handler(
     require!(holds, PitchError::OracleValidationFailed);
 
     market.winning_outcome = winning_outcome;
+
     // If nobody staked the winning outcome, there are no winners to split the pool — refund
-    // every bettor their stake instead of locking the funds forever.
+    // every bettor their stake instead of locking the funds forever. No fee is taken on a refund.
     if market.pool_per_outcome[winning_outcome as usize] == 0 {
         market.status = MarketStatus::Refunded;
         msg!(
@@ -123,13 +145,63 @@ pub fn resolve_handler(
             market.match_id,
             winning_outcome
         );
-    } else {
-        market.status = MarketStatus::Resolved;
-        msg!(
-            "Market resolved: fixture={} winning_outcome={} (TxODDS Merkle-verified)",
-            market.match_id,
-            winning_outcome
-        );
+        return Ok(());
     }
+
+    market.status = MarketStatus::Resolved;
+
+    // Rake the protocol fee off the top, once, here at settlement. `total_pool` then *is* the net
+    // pool that winners split pro-rata in `claim`, so no fee can be left stranded in the vault and
+    // every lamport in it is owed to a winner.
+    let fee: u64 = (market.total_pool as u128)
+        .checked_mul(PROTOCOL_FEE_BPS as u128)
+        .ok_or(PitchError::MathOverflow)?
+        .checked_div(BPS_DENOMINATOR as u128)
+        .ok_or(PitchError::MathOverflow)? as u64;
+
+    market.total_pool = market
+        .total_pool
+        .checked_sub(fee)
+        .ok_or(PitchError::MathOverflow)?;
+
+    let (match_id, kind, bump, net_pool) = (
+        market.match_id,
+        market.kind,
+        market.bump,
+        market.total_pool,
+    );
+
+    if fee > 0 {
+        // Transfer signed by the market PDA (the vault authority).
+        let match_id_bytes = match_id.to_le_bytes();
+        let kind_bytes = [kind];
+        let signer_seeds: &[&[&[u8]]] = &[&[
+            MARKET_SEED,
+            match_id_bytes.as_ref(),
+            kind_bytes.as_ref(),
+            &[bump],
+        ]];
+
+        token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.key(),
+                Transfer {
+                    from: ctx.accounts.vault.to_account_info(),
+                    to: ctx.accounts.fee_destination.to_account_info(),
+                    authority: ctx.accounts.market.to_account_info(),
+                },
+                signer_seeds,
+            ),
+            fee,
+        )?;
+    }
+
+    msg!(
+        "Market resolved: fixture={} winning_outcome={} fee={} net_pool={} (TxODDS Merkle-verified)",
+        match_id,
+        winning_outcome,
+        fee,
+        net_pool
+    );
     Ok(())
 }

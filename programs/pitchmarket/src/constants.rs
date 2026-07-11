@@ -11,7 +11,9 @@ pub const POSITION_SEED: &[u8] = b"position";
 /// Max number of outcomes a market can have (e.g. 3 = Home/Draw/Away).
 pub const MAX_OUTCOMES: usize = 8;
 
-/// Protocol fee in basis points, skimmed from the pool at claim time (1% = 100 bps).
+/// Protocol fee in basis points (1% = 100 bps). Taken once, off the top of the pool, at
+/// settlement — so `total_pool` becomes the net pool that winners split pro-rata. Taking it here
+/// rather than per-claim means no fee can ever be stranded in the vault.
 pub const PROTOCOL_FEE_BPS: u64 = 100;
 pub const BPS_DENOMINATOR: u64 = 10_000;
 

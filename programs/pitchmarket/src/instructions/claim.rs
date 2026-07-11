@@ -59,19 +59,14 @@ pub fn claim_handler(ctx: Context<Claim>) -> Result<()> {
     let winner_pool = market.pool_per_outcome[winner];
     // winner_pool > 0 is guaranteed because this position staked on it.
 
-    // Pari-mutuel pro-rata payout: stake / winner_pool * total_pool.
-    let gross: u128 = (winning_stake as u128)
+    // Pari-mutuel pro-rata payout: stake / winner_pool * total_pool. `total_pool` is already net of
+    // the protocol fee, which `resolve` raked off the top at settlement — so there is nothing to
+    // skim here and the vault holds exactly what the winners are owed.
+    let payout: u64 = (winning_stake as u128)
         .checked_mul(market.total_pool as u128)
         .ok_or(PitchError::MathOverflow)?
         .checked_div(winner_pool as u128)
-        .ok_or(PitchError::MathOverflow)?;
-
-    // Protocol fee (stays in vault for the authority to sweep later).
-    let fee: u128 = gross
-        .checked_mul(PROTOCOL_FEE_BPS as u128)
-        .ok_or(PitchError::MathOverflow)?
-        / BPS_DENOMINATOR as u128;
-    let net: u64 = (gross - fee) as u64;
+        .ok_or(PitchError::MathOverflow)? as u64;
 
     position.claimed = true;
 
@@ -95,9 +90,15 @@ pub fn claim_handler(ctx: Context<Claim>) -> Result<()> {
             },
             signer_seeds,
         ),
-        net,
+        payout,
     )?;
 
-    msg!("Claimed: net_payout={} (gross={} fee={})", net, gross, fee as u64);
+    msg!(
+        "Claimed: payout={} (stake={} of winner_pool={}, net pool={})",
+        payout,
+        winning_stake,
+        winner_pool,
+        market.total_pool
+    );
     Ok(())
 }
