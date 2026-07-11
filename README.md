@@ -77,6 +77,8 @@ pnpm --filter @verdict/relayer exec tsx src/scripts/goldenTest.ts # verify a rea
 - On-chain: TxODDS program id + roots-account ownership are asserted before the CPI, so a caller
   can't substitute a forged roots account or fake the winning outcome.
 
-Design notes: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/DESIGN.md](docs/DESIGN.md) · [docs/ROADMAP.md](docs/ROADMAP.md)
+Docs: **[docs/TXODDS_INTEGRATION.md](docs/TXODDS_INTEGRATION.md)** (how settlement verifies against
+TxODDS on-chain — the core of the submission) · [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) ·
+[docs/DESIGN.md](docs/DESIGN.md) · [docs/ROADMAP.md](docs/ROADMAP.md)
 
 🤖 Built with [Claude Code](https://claude.com/claude-code)
