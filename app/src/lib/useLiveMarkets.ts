@@ -5,6 +5,7 @@ import type { MarketLive, IndexerMessage } from "@verdict/shared";
 
 const CONFIGURED_WS = process.env.NEXT_PUBLIC_INDEXER_WS;
 const MAX_RETRIES = 5;
+const POLL_MS = 15_000; // /api/markets refresh cadence (matches the serverless cache TTL)
 
 /**
  * Only dial the indexer when one is actually reachable: a remote URL always, a localhost URL
@@ -29,9 +30,37 @@ export function useLiveMarkets(fallback: MarketLive[]) {
   const [live, setLive] = useState(false);
   const byId = useRef<Map<number, MarketLive>>(new Map(fallback.map((m) => [m.fixtureId, m])));
 
+  // Hosted demo: no local WebSocket indexer, so poll the /api/markets serverless function instead.
+  // (It fetches TxODDS server-side with the credentials, so the browser never sees them.)
+  useEffect(() => {
+    if (resolveWsUrl()) return; // a live WS is reachable — the WS effect below owns updates
+    let cancelled = false;
+
+    const poll = async () => {
+      try {
+        const res = await fetch("/api/markets", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled || !Array.isArray(data.markets) || data.markets.length === 0) return;
+        byId.current = new Map((data.markets as MarketLive[]).map((m) => [m.fixtureId, m]));
+        setMarkets([...byId.current.values()]);
+        setLive(Boolean(data.live));
+      } catch {
+        /* keep the seeded fallback data */
+      }
+    };
+
+    poll();
+    const id = setInterval(poll, POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+
   useEffect(() => {
     const url = resolveWsUrl();
-    if (!url) return; // hosted demo: stay on the seeded data, no endless reconnects
+    if (!url) return; // hosted demo: the polling effect above handles updates
 
     let ws: WebSocket | null = null;
     let retry: ReturnType<typeof setTimeout>;

@@ -24,6 +24,13 @@ export function loadKeypair(path: string): Keypair {
   return Keypair.fromSecretKey(Uint8Array.from(secret));
 }
 
+/**
+ * Load the admin keypair. In a serverless/cron env there is no filesystem, so prefer the inline
+ * secret in ADMIN_KEYPAIR_SECRET (a JSON array of bytes, i.e. the contents of admin.json); fall
+ * back to the ADMIN_KEYPAIR file path for local runs.
+ */
 export function adminKeypair(): Keypair {
+  const inline = process.env.ADMIN_KEYPAIR_SECRET;
+  if (inline) return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(inline)));
   return loadKeypair(process.env.ADMIN_KEYPAIR ?? "./keypairs/admin.json");
 }
