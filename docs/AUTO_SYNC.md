@@ -1,61 +1,65 @@
-# Automatic sync — no always-on server
+# Keeping markets in sync
 
-Verdict keeps its markets in sync with the live TxODDS World Cup feed **without** any persistent
-host (no Railway / Fly / Render). Everything runs on the same Vercel project as the frontend, using
-**Serverless Functions + Vercel Cron**.
+Verdict's on-chain markets are kept in sync with the live TxODDS World Cup feed by a **routine you
+run yourself** — no always-on server (no Railway / Fly / Render) and nothing to configure.
 
-```
-Browser (static site)  ──poll /api/markets every 15s──►  api/markets.ts  ─► TxODDS (fixtures+scores)
-                                                            (creds server-side, never in the browser)
+## The daily routine
 
-Vercel Cron (every 3h)  ──────────────────────────────►  api/sync.ts  ─► runSyncOnce()
-                                                            creates 1X2 markets for new fixtures
-                                                            resolves finished ones via validate_stat CPI
+```bash
+pnpm sync:daily
 ```
 
-Two functions, both at the repo root in [`api/`](../api):
+One pass, then it exits:
 
-| Function | Trigger | What it does | Secrets used |
-|---|---|---|---|
-| `api/markets.ts` | Frontend polling (client, on-demand) | Fetches WC fixtures + live scores from TxODDS, returns shaped JSON. Credentials stay server-side. | `TXODDS_JWT`, `TXODDS_API_KEY` |
-| `api/sync.ts` | Vercel Cron (`vercel.json` → every 3h) | Runs one pass of `runSyncOnce()`: creates markets for new fixtures, resolves finished ones on-chain. | `ADMIN_KEYPAIR_SECRET`, `USDC_MINT`, `SOLANA_RPC_URL`, `TXODDS_*`, `CRON_SECRET` |
+1. Pulls the current World Cup fixtures from TxODDS.
+2. Creates a 1X2 market on-chain for any fixture that doesn't have one (betting closes at kickoff).
+3. Resolves any market whose match has finished, via the real TxODDS `validate_stat` CPI.
 
-The static export is untouched — Vercel serves `app/out` **and** auto-detects the root `api/` folder
-as Serverless Functions (works with `framework: null`).
-
-## Environment variables (Vercel dashboard → Project → Settings → Environment Variables)
-
-Set these for **Production** (and Preview if you want):
+It prints exactly what it did and is **safe to run as often as you like** — re-running when nothing
+changed is a no-op:
 
 ```
-TXODDS_JWT             = <guest JWT from `pnpm --filter @verdict/relayer subscribe`>
-TXODDS_API_KEY         = <apiToken from the same subscribe step>
-TXODDS_DATA_ORIGIN     = https://txline-dev.txodds.com   # optional (this is the default)
+▶ Verdict daily sync · 2026-07-11 17:28:00 · cluster=devnet
 
-# only needed by api/sync.ts (on-chain writes):
-ADMIN_KEYPAIR_SECRET   = [12,34, ... ]   # the JSON byte array — contents of keypairs/admin.json
-USDC_MINT              = <the devnet mint used by the markets>
-SOLANA_RPC_URL         = https://api.devnet.solana.com
-CRON_SECRET            = <any long random string; Vercel sends it as a Bearer token to the cron>
+  fixtures found : 3
+  markets created: 0
+  markets resolved: 0
+
+✅ Already in sync — nothing to do.
 ```
 
-> `ADMIN_KEYPAIR_SECRET` is the raw array from `keypairs/admin.json` (e.g. `cat keypairs/admin.json`).
-> Never commit it — it lives only in Vercel env vars. `CRON_SECRET` makes `/api/sync` reject any
-> caller that isn't Vercel Cron.
+### No setup required
 
-## Cron cadence
+It reads the TxODDS credentials from `relayer/.env` (written by `pnpm --filter @verdict/relayer
+subscribe`) and signs with your default Solana CLI key at `~/.config/solana/id.json` — the same key
+that deployed the program. The devnet test USDC mint is the default too. Override any of it with
+`ADMIN_KEYPAIR`, `USDC_MINT`, `SOLANA_RPC_URL` env vars if you ever need a different setup.
 
-`vercel.json` schedules `/api/sync` every 3 hours (`0 */3 * * *`). On the **Hobby** plan Vercel Cron
-runs at most once per day, so for tighter cadence use a **Pro** project (any schedule) — the live
-score feed (`/api/markets`) is client polling and refreshes every 15s regardless of plan.
+## Related commands
 
-## Running it locally (unchanged)
+| Command | What it does |
+|---|---|
+| `pnpm sync:daily` | **One pass, then exits.** The routine to run each day. |
+| `pnpm sync:watch` | Same logic on a 60s loop — useful while a match is actually live. |
+| `pnpm indexer:dev` | Local WebSocket feed of live scores for the frontend (optional, dev only). |
 
-The persistent loop still exists for local dev / the demo machine:
+All three share one code path: [`runSyncOnce()`](../relayer/src/syncOnce.ts).
 
+## Optional: let macOS run it for you
+
+If you'd rather not remember it, `crontab -e` and add a line to run it every day at 09:00:
+
+```cron
+0 9 * * * cd "/Volumes/VibeCode/Solana Hackaton" && /usr/local/bin/pnpm sync:daily >> /tmp/verdict-sync.log 2>&1
 ```
-pnpm --filter @verdict/relayer sync     # loop: runSyncOnce() every 60s
-pnpm --filter @verdict/indexer dev      # WebSocket live feed (optional)
-```
 
-Both the loop and the cron call the same [`runSyncOnce()`](../relayer/src/syncOnce.ts).
+(Adjust the `pnpm` path to match `which pnpm`.) This is purely a convenience — the routine is
+identical either way.
+
+## The hosted site
+
+The public Vercel site is a static export and does **not** need any of this to run: it serves the
+markets it already knows about. There is one optional serverless function, [`api/markets.ts`](../api/markets.ts),
+which serves the live TxODDS fixtures/scores to the hosted frontend. It only activates if you set
+`TXODDS_JWT` and `TXODDS_API_KEY` in the Vercel project's environment variables; without them the
+site simply falls back to its seeded market data. Nothing breaks either way.

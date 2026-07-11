@@ -8,8 +8,11 @@
     "typecheck": "pnpm -r typecheck",
     "anchor:build": "anchor build",
     "anchor:test": "anchor test",
-    "relayer:dev": "pnpm --filter @pitchmarket/relayer dev",
-    "app:dev": "pnpm --filter @pitchmarket/app dev"
+    "relayer:dev": "pnpm --filter @verdict/relayer dev",
+    "app:dev": "pnpm --filter @verdict/app dev",
+    "indexer:dev": "pnpm --filter @verdict/indexer dev",
+    "sync:daily": "pnpm --filter @verdict/relayer sync:daily",
+    "sync:watch": "pnpm --filter @verdict/relayer sync"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "^0.31.1",

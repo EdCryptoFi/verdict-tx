@@ -5,11 +5,5 @@
   "trailingSlash": false,
   "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @verdict/app build",
-  "outputDirectory": "app/out",
-  "functions": {
-    "api/sync.ts": { "maxDuration": 60 }
-  },
-  "crons": [
-    { "path": "/api/sync", "schedule": "0 */3 * * *" }
-  ]
+  "outputDirectory": "app/out"
 }

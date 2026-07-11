@@ -10,6 +10,7 @@
     "faucet": "tsx src/scripts/faucet.ts",
     "subscribe": "tsx src/scripts/subscribe.ts",
     "sync": "tsx src/sync.ts",
+    "sync:daily": "tsx src/scripts/syncDaily.ts",
     "verify": "tsx src/scripts/verify.ts",
     "create-market": "tsx src/scripts/createMarket.ts",
     "resolve": "tsx src/scripts/resolveMarket.ts",
