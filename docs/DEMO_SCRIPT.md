@@ -76,7 +76,97 @@ O track pede: *"Markets, resolution & settlement on verifiable World Cup data: o
 
 ---
 
-## 4. Checklist antes de gravar
+## 4. Narração — palavra por palavra
+
+Inglês (o que você grava) com o português ao lado (pra você ler natural). ~370 palavras ≈ 2:30 num
+ritmo calmo. **Fale devagar nos beats 4 e 5** — é onde está o argumento.
+
+---
+
+**[0:00 · `/welcome`, hero]**
+
+> "Every prediction market answers the same question at the end: **who decides the result?**
+> Almost always, an oracle you're asked to trust. A multisig. A committee.
+> Prediction markets don't fail at betting. They fail at settlement.
+> Verdict removes trust from that question entirely."
+
+*(Todo mercado de previsão responde a mesma pergunta no final: quem decide o resultado? Quase sempre um oráculo em quem te pedem pra confiar. Mercados de previsão não falham na aposta — falham na liquidação. O Verdict tira a confiança dessa pergunta.)*
+
+---
+
+**[0:20 · `/`, grid de mercados — passe o mouse num card]**
+
+> "These are pari-mutuel World Cup markets. Home, Draw, Away.
+> And these numbers are not a mock-up. The pool, the predictors, the odds —
+> the frontend reads them straight from the market accounts on Solana devnet.
+> In pari-mutuel there's no bookmaker setting a line. The odds **are** the split of the pool."
+
+*(Mercados pari-mutuel de Copa. E esses números não são mock: o front lê direto das contas na devnet. Em pari-mutuel não existe casa definindo a linha — a odd É a divisão do pool.)*
+
+---
+
+**[0:45 · `/match`, conectar carteira → apostar → aprovar na Phantom]**
+
+> "So let me actually bet. This is a real transaction on devnet.
+> Watch the odds. My stake goes into the pool, and the payout multiple on every outcome moves —
+> because the payout is just the total pool divided by what's sitting on that side."
+
+*(Deixa eu apostar de verdade. Transação real na devnet. Olha as odds: minha aposta entra no pool e o múltiplo de todos os resultados se mexe — porque o pagamento é o pool total dividido pelo que está naquele lado.)*
+
+---
+
+**[1:10 · `/match?id=18192996` — Settlement Theater roda os 4 passos]**
+
+> "Now the part that matters. This match is finished — Mexico two, England three.
+> TxODDS commits that score to a Merkle root **on-chain**.
+> When Verdict settles, it does **not** trust me, and it does not trust a relayer.
+> It makes a cross-program invocation into TxODDS' own `validate_stat`,
+> which verifies the Merkle proof against **their** root.
+> The winning outcome comes from the sponsor's on-chain commitment — not from my server."
+
+**[clique na tx → Solana Explorer, mostre o CPI]**
+
+> "There's the transaction. That inner instruction is the call into the TxODDS program."
+
+*(Agora a parte que importa. Jogo terminado, México 2 Inglaterra 3. A TxODDS publica esse placar numa raiz Merkle on-chain. Na liquidação, o Verdict não confia em mim nem num relayer: ele faz um CPI no `validate_stat` da própria TxODDS, que verifica a prova contra a raiz DELES. O resultado vem do compromisso on-chain do patrocinador — não do meu servidor.)*
+
+---
+
+**[1:50 · terminal — `bash scripts/test-local.sh`, destaque no teste negativo]**
+
+> "But can I cheat? Let's try. Every market stores the predicate for each outcome
+> at creation time. So here I try to settle a **false** outcome — a result that didn't happen.
+> `validate_stat` returns false, and the transaction reverts. `OracleValidationFailed`.
+> Not even the admin can lie about the score."
+
+*(Mas dá pra trapacear? Vamos tentar. Cada mercado guarda o predicado de cada resultado na criação. Aqui eu tento liquidar um resultado falso — que não aconteceu. O `validate_stat` retorna falso e a transação reverte. Nem o admin consegue mentir sobre o placar.)*
+
+---
+
+**[2:10 · terminal — `pnpm sync:daily` → fecha no logo + links]**
+
+> "And it runs itself. One routine pulls the live TxODDS fixtures,
+> creates the markets, and settles the ones that finished.
+> No oracle key. No trusted server. No me in the middle.
+> Verdict — the verdict of the match, proved on-chain."
+
+*(E roda sozinho. Uma rotina puxa os jogos reais da TxODDS, cria os mercados e liquida os que terminaram. Sem chave de oráculo, sem servidor confiável, sem eu no meio. Verdict — o veredito da partida, provado on-chain.)*
+
+---
+
+**Cartela final (3s):**
+```
+VERDICT
+Pari-mutuel World Cup markets. Settled by proof, not by trust.
+
+github.com/EdCryptoFi/verdict-tx
+verdict-tx.vercel.app
+Solana devnet · Bw3Ztg8nPBRxVLLtNqCksQNEP4cbv64xbpzr6YHrX7a7
+```
+
+---
+
+## 5. Checklist antes de gravar
 
 - [ ] `pnpm sync:daily` — garante que os mercados estão criados
 - [ ] Carteira com SOL de devnet + USDC de teste (`pnpm --filter @verdict/relayer faucet <addr> <amount>`)
