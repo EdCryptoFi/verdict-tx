@@ -58,10 +58,10 @@ export default function Home() {
 
           {/* Volume card (top-right, over the trophy) */}
           <div className="hidden lg:block absolute top-10 right-6 xl:right-10 z-20 w-80">
-            <VolumeCard liveMarkets={24} volume={2458921} />
+            <VolumeCard />
           </div>
           <div className="lg:hidden mt-8">
-            <VolumeCard liveMarkets={24} volume={2458921} />
+            <VolumeCard />
           </div>
         </div>
       </section>
@@ -69,7 +69,6 @@ export default function Home() {
       {/* Action bar */}
       <section className="px-margin-mobile md:px-margin-desktop py-4 bg-surface-container-lowest border-b border-metallic-gray/30 flex flex-wrap gap-4 items-center">
         <span className="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container py-1 italic uppercase">World Cup Markets</span>
-        <a href="/leaderboard" className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary-container py-1 uppercase transition-colors">Leaderboard</a>
         <a href="/portfolio" className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary-container py-1 uppercase transition-colors">Portfolio</a>
         <div className="ml-auto flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ background: live ? "var(--color-primary-container)" : "var(--color-on-surface-variant)" }} />

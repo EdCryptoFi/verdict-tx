@@ -4,54 +4,10 @@ import { motion } from "framer-motion";
 import { VolumeStat } from "@/components/VolumeStat";
 import { Icon } from "@/components/Icon";
 import { WalletButton } from "@/components/WalletButton";
-
-const HOT = [
-  {
-    tag: "FEATURED",
-    q: "Who will win the",
-    title: "FIFA World Cup 2026?",
-    sub: "Outright Winner",
-    art: "/art/ic-trophy.png",
-    pool: "$512,430",
-    opts: [
-      ["🇧🇷", "Brazil", "2.75", "23%"],
-      ["🇫🇷", "France", "3.40", "18%"],
-      ["🇦🇷", "Argentina", "4.20", "15%"],
-    ],
-  },
-  {
-    q: "Which team will score",
-    title: "the most goals?",
-    sub: "Outright",
-    art: "/art/ic-ball.png",
-    pool: "$281,990",
-    opts: [
-      ["🏴󠁧󠁢󠁥󠁮󠁧󠁿", "England", "2.10", "28%"],
-      ["🇧🇷", "Brazil", "2.80", "22%"],
-      ["🇫🇷", "France", "3.60", "16%"],
-    ],
-  },
-  {
-    q: "Who will win the",
-    title: "Golden Glove?",
-    sub: "Outright",
-    art: "/art/ic-glove.png",
-    pool: "$142,550",
-    opts: [
-      ["🇩🇪", "M. Ter Stegen", "2.50", "20%"],
-      ["🇧🇷", "Alisson", "3.10", "17%"],
-      ["🇦🇷", "E. Martinez", "4.00", "13%"],
-    ],
-  },
-];
-
-const TRADERS: [string, string, string, string][] = [
-  ["🥇", "DeFiStriker", "+ $18,490", "from-fuchsia-500 to-violet-600"],
-  ["🥈", "PredictKing", "+ $11,230", "from-violet-500 to-indigo-600"],
-  ["🥉", "SolBaller", "+ $7,890", "from-emerald-500 to-teal-600"],
-  ["4", "MarketMaverick", "+ $5,430", "from-sky-500 to-blue-600"],
-  ["5", "VerdictMaster", "+ $4,210", "from-amber-500 to-orange-600"],
-];
+import { useProtocolStats } from "@/lib/useProtocolStats";
+import { useLiveMarkets } from "@/lib/useLiveMarkets";
+import { useOnchainMarkets, applyChainState } from "@/lib/useOnchainMarkets";
+import { DEMO_MARKETS } from "@/lib/demoMarkets";
 
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } } };
 const rise = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
@@ -66,6 +22,10 @@ function Wordmark({ small }: { small?: boolean }) {
 }
 
 export default function Welcome() {
+  const stats = useProtocolStats();
+  const { markets: feed } = useLiveMarkets(DEMO_MARKETS);
+  const { chain } = useOnchainMarkets();
+  const markets = applyChainState(feed, chain);
   return (
     <div className="fixed inset-0 z-[60] overflow-y-auto bg-background text-on-surface grain">
       {/* Nav */}
@@ -79,7 +39,7 @@ export default function Welcome() {
             Markets
             <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary-container rounded-full" />
           </a>
-          {[["Leaderboard", "/leaderboard"], ["How it works", "/#how"], ["About", "https://txline-docs.txodds.com"]].map(([l, h]) => (
+          {[["How it works", "/#how"], ["About", "https://txline-docs.txodds.com"]].map(([l, h]) => (
             <a key={l} href={h} className="text-on-surface hover:text-primary-container transition-colors">{l}</a>
           ))}
         </div>
@@ -130,22 +90,25 @@ export default function Welcome() {
             <motion.div initial={false} className="rounded-2xl border border-primary-container/20 bg-black/70 backdrop-blur-md p-6 lime-glow w-full lg:w-[270px]">
               <div className="flex items-center gap-2 mb-2">
                 <span className="grid place-items-center w-5 h-5 rounded-full bg-primary-container/15 text-primary-container"><Icon name="download" size={12} /></span>
-                <span className="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Live Volume</span>
+                <span className="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Total Staked</span>
               </div>
-              <VolumeStat value={2458921} prefix="$" className="block font-display-hero text-[34px] leading-none italic text-primary-container" />
-              <div className="font-label-caps text-[10px] mt-2"><span className="text-primary-container">+24.7%</span></div>
-              <div className="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">24H Volume</div>
+              <VolumeStat value={Math.round(stats.volumeUsdc)} className="block font-display-hero text-[34px] leading-none italic text-primary-container" />
+              <div className="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mt-2">USDC · Solana devnet</div>
 
               <div className="h-px w-full bg-metallic-gray/40 my-5" />
 
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-3">
                 <div>
-                  <div className="font-label-caps text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">Markets Live</div>
-                  <VolumeStat value={24} className="font-display-hero text-[28px] italic text-primary-container" />
+                  <div className="font-label-caps text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">Open</div>
+                  <VolumeStat value={stats.marketsOpen} className="font-display-hero text-[28px] italic text-primary-container" />
                 </div>
-                <div className="pl-4 border-l border-metallic-gray/40">
+                <div className="pl-3 border-l border-metallic-gray/40">
+                  <div className="font-label-caps text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">Settled</div>
+                  <VolumeStat value={stats.marketsSettled} className="font-display-hero text-[28px] italic text-primary-container" />
+                </div>
+                <div className="pl-3 border-l border-metallic-gray/40">
                   <div className="font-label-caps text-[9px] text-on-surface-variant uppercase tracking-widest mb-1">Traders</div>
-                  <VolumeStat value={5842} className="font-display-hero text-[28px] italic text-primary-container" />
+                  <VolumeStat value={stats.traders} className="font-display-hero text-[28px] italic text-primary-container" />
                 </div>
               </div>
 
@@ -176,46 +139,46 @@ export default function Welcome() {
         </div>
       </section>
 
-      {/* Hot markets + Top traders */}
-      <section className="relative z-10 px-margin-mobile md:px-margin-desktop pb-8 grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6">
+      {/* Live markets — the real ones, read from chain */}
+      <section className="relative z-10 px-margin-mobile md:px-margin-desktop pb-8">
         <div>
-          <h2 className="font-headline-lg-mobile italic uppercase mb-4 flex items-center gap-2">🔥 Hot Markets</h2>
+          <h2 className="font-headline-lg-mobile italic uppercase mb-4 flex items-center gap-2">🔥 Live Markets</h2>
           <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-3">
-            {HOT.map((m) => (
+            {markets.map((m) => (
               <motion.a
-                key={m.title}
+                key={m.fixtureId}
                 variants={rise}
                 whileHover={{ y: -3 }}
-                href="/"
+                href={`/match?id=${m.fixtureId}`}
                 className="block rounded-xl border border-metallic-gray/50 bg-surface-container-low/80 hover:border-primary-container/60 transition-colors"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(230px,1.1fr)_2.3fr_auto_44px] items-center gap-4 p-4">
                   <div className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img alt="" src={m.art} className="w-12 h-12 rounded-lg object-cover border border-metallic-gray/40" />
+                    <span className="grid place-items-center w-12 h-12 rounded-lg border border-metallic-gray/40 text-2xl">{m.homeFlag}</span>
                     <div className="min-w-0">
-                      {m.tag && <span className="inline-block mb-1 rounded bg-primary-container text-on-primary-container px-1.5 py-0.5 font-label-caps text-[8px] uppercase">{m.tag}</span>}
-                      <div className="font-body-md text-on-surface-variant text-sm leading-tight">{m.q}</div>
-                      <div className="font-label-caps text-label-caps uppercase text-on-surface truncate">{m.title}</div>
-                      <div className="font-label-caps text-[9px] text-on-surface-variant/60 uppercase mt-0.5">{m.sub}</div>
+                      {m.winningOutcome !== undefined && (
+                        <span className="inline-block mb-1 rounded bg-primary-container text-on-primary-container px-1.5 py-0.5 font-label-caps text-[8px] uppercase">Settled ✓</span>
+                      )}
+                      <div className="font-body-md text-on-surface-variant text-sm leading-tight">Who wins?</div>
+                      <div className="font-label-caps text-label-caps uppercase text-on-surface truncate">{m.home} v {m.away}</div>
+                      <div className="font-label-caps text-[9px] text-on-surface-variant/60 uppercase mt-0.5">Full-time 1X2</div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3">
-                    {m.opts.map(([flag, name, odds, pct], i) => (
-                      <div key={name} className={i > 0 ? "pl-4 border-l border-metallic-gray/30" : ""}>
-                        <div className="flex items-center gap-1.5 mb-1"><span className="text-base">{flag}</span><span className="font-label-caps text-[10px] uppercase truncate text-on-surface-variant">{name}</span></div>
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-data-numeric text-on-surface text-lg italic">{odds}</span>
-                          <span className="text-[10px] text-on-surface-variant/60">{pct}</span>
-                        </div>
+                    {m.outcomes.map((o, i) => (
+                      <div key={o.label} className={i > 0 ? "pl-4 border-l border-metallic-gray/30" : ""}>
+                        <div className="font-label-caps text-[10px] uppercase truncate text-on-surface-variant mb-1">{o.label}</div>
+                        <span className="font-data-numeric text-on-surface text-lg italic">
+                          {o.odds > 0 ? `${o.odds.toFixed(2)}x` : "—"}
+                        </span>
                       </div>
                     ))}
                   </div>
 
                   <div className="text-right">
                     <div className="font-label-caps text-[9px] text-on-surface-variant uppercase tracking-widest">Total Pool</div>
-                    <div className="font-data-numeric text-primary-container italic text-lg">{m.pool}</div>
+                    <div className="font-data-numeric text-primary-container italic text-lg">{m.poolUsdc.toLocaleString()} USDC</div>
                   </div>
 
                   <span className="justify-self-end grid place-items-center w-9 h-9 rounded-full border border-metallic-gray/50 text-primary-container">
@@ -229,27 +192,6 @@ export default function Welcome() {
           <motion.a href="/" whileHover={{ scale: 1.01 }} className="mt-4 flex items-center justify-center gap-3 rounded-xl border border-primary-container/50 text-primary-container py-3.5 font-label-caps text-label-caps uppercase hover:bg-primary-container/10 transition-colors">
             View all markets
             <span className="grid place-items-center w-7 h-7 rounded-md border border-primary-container/50"><Icon name="chevronRight" size={14} /></span>
-          </motion.a>
-        </div>
-
-        {/* Top traders */}
-        <div className="rounded-2xl border border-metallic-gray/50 bg-surface-container-low/80 p-5 h-fit lime-glow">
-          <h3 className="font-label-caps text-label-caps uppercase flex items-center gap-2 mb-4">
-            <span className="grid place-items-center w-6 h-6 rounded-full bg-primary-container/15 text-primary-container"><Icon name="verified" size={13} /></span>
-            Top Traders
-          </h3>
-          <div>
-            {TRADERS.map(([rank, name, amt, grad], i) => (
-              <motion.div key={name} whileHover={{ x: 2 }} className="flex items-center gap-3 py-2.5 border-b border-metallic-gray/20 last:border-0">
-                <span className={`w-6 text-center ${i < 3 ? "text-base" : "font-display-hero italic text-on-surface-variant"}`}>{rank}</span>
-                <span className={`w-8 h-8 rounded-full bg-gradient-to-br ${grad} shrink-0 border border-white/10`} />
-                <span className="flex-1 font-label-caps text-label-caps truncate">{name}</span>
-                <span className="font-data-numeric text-primary-container text-sm">{amt}</span>
-              </motion.div>
-            ))}
-          </div>
-          <motion.a href="/leaderboard" whileHover={{ scale: 1.02 }} className="mt-4 flex items-center justify-center gap-2 rounded-lg border border-primary-container text-primary-container py-3 font-label-caps text-[10px] uppercase hover:bg-primary-container hover:text-on-primary-container transition-colors">
-            View Leaderboard 🏆
           </motion.a>
         </div>
       </section>

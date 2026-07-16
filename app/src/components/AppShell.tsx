@@ -20,7 +20,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="hidden md:flex gap-6 items-center">
             <a className="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container py-1 transition-all" href="/">Markets</a>
             <a className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary-container transition-colors" href="/portfolio">Portfolio</a>
-            <a className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary-container transition-colors" href="/leaderboard">Leaderboard</a>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -46,9 +45,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </a>
             <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/portfolio">
               <Icon name="user" /><span className="font-label-caps text-label-caps">Portfolio</span>
-            </a>
-            <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/leaderboard">
-              <Icon name="chart" /><span className="font-label-caps text-label-caps">Leaderboard</span>
             </a>
             <a className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-primary-container hover:translate-x-1 transition-all" href="/#how">
               <Icon name="verified" /><span className="font-label-caps text-label-caps">How it works</span>
@@ -92,9 +88,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 bg-background/95 backdrop-blur-lg border-t-2 border-primary-container shadow-[0_-4px_20px_rgba(0,255,65,0.3)]">
         <a className="flex flex-col items-center justify-center text-primary-container scale-110 transition-transform" href="/">
           <Icon name="globe" /><span className="font-label-caps text-[10px] mt-1 uppercase">World Cup</span>
-        </a>
-        <a className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 active:scale-90 transition-transform" href="/leaderboard">
-          <Icon name="chart" /><span className="font-label-caps text-[10px] mt-1 uppercase">Ranks</span>
         </a>
         <a className="flex flex-col items-center justify-center text-on-surface-variant opacity-70 active:scale-90 transition-transform" href="/#markets">
           <Icon name="live" /><span className="font-label-caps text-[10px] mt-1 uppercase">Live</span>
