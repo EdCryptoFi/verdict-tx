@@ -60,23 +60,23 @@ O track pede: *"Markets, resolution & settlement on verifiable World Cup data: o
   <br>↳ *(Mercados pari-mutuel de Copa do Mundo. Casa, empate, fora.)*
 
 **▸ SHOT 5 — 0:28–0:37**
-- **TELA:** hover num card **com pool > 0**. Zoom no rodapé: **`Tournament Pool · on-chain`**, o valor em USDC e os *Predictors*.
+- **TELA:** hover no card **France v England** (pool 100 USDC). Zoom no rodapé: **`Tournament Pool · on-chain`** + `100 USDC` + *Predictors*.
 - **LEGENDA:** `Pool, predictors, odds — read live from Solana devnet`
 - **VOZ:** *"And these numbers are not a mock-up. The pool, the predictors, the odds — the frontend reads them straight from the market accounts on Solana devnet."*
   <br>↳ *(E esses números não são mock. O pool, os apostadores, as odds — o front lê direto das contas do mercado na devnet.)*
 
 **▸ SHOT 6 — 0:37–0:45**
-- **TELA:** zoom nas três odds do BetBox (ex.: `3.00x` / `—` / `1.50x`).
+- **TELA:** zoom nas odds do France v England: **`1.67x` / `—` / `2.50x`** (pool 100: 60 no Home, 40 no Away).
 - **LEGENDA:** `No bookmaker. The odds ARE the split of the pool.`
-- **VOZ:** *"In pari-mutuel there's no bookmaker setting a line. The odds are the split of the pool."*
-  <br>↳ *(Em pari-mutuel não existe casa definindo a linha. A odd É a divisão do pool.)*
+- **VOZ:** *"In pari-mutuel there's no bookmaker setting a line. The odds are the split of the pool. Sixty on France, forty on England — that's where those multiples come from. And the draw shows a dash, because nobody has backed it yet."*
+  <br>↳ *(Em pari-mutuel não tem casa definindo linha. A odd É a divisão do pool. Sessenta na França, quarenta na Inglaterra — é daí que vêm esses múltiplos. E o empate mostra um traço porque ninguém apostou nele ainda.)*
 
 ---
 
 ### BLOCO 3 — A aposta real · 0:45–1:10
 
 **▸ SHOT 7 — 0:45–0:52**
-- **TELA:** `/match?id=…` → clique **Connect Wallet** → popup da Phantom → conectado (endereço aparece).
+- **TELA:** `/match?id=18257865` (France v England) → clique **Connect Wallet** → popup da Phantom → conectado (endereço aparece).
 - **LEGENDA:** `Connect · Solana devnet`
 - **VOZ:** *"So let me actually bet."*
   <br>↳ *(Então deixa eu apostar de verdade.)*
@@ -88,7 +88,7 @@ O track pede: *"Markets, resolution & settlement on verifiable World Cup data: o
   <br>↳ *(É uma transação real na devnet. Não é simulação.)*
 
 **▸ SHOT 9 — 1:00–1:10** ⭐
-- **TELA:** confirma → aparece `✅ bet placed · <assinatura>` → **as odds mudam na tela**. Zoom nelas.
+- **TELA:** confirma → aparece `✅ bet placed · <assinatura>` → **as odds mudam na tela** (25 no Draw ⇒ o `—` vira um número e os outros dois caem). Zoom nelas.
 - **LEGENDA:** `Stake enters the pool → every payout multiple moves`
 - **VOZ:** *"Watch the odds. My stake goes into the pool, and the payout multiple on every outcome moves — because the payout is just the total pool divided by what's sitting on that side."*
   <br>↳ *(Olha as odds. Minha aposta entra no pool e o múltiplo de todo resultado se mexe — porque o pagamento é só o pool total dividido pelo que está naquele lado.)*
@@ -128,10 +128,17 @@ O track pede: *"Markets, resolution & settlement on verifiable World Cup data: o
   <br>↳ *(O resultado vencedor vem do compromisso on-chain do patrocinador — não do meu servidor.)*
 
 **▸ SHOT 15 — 1:46–1:50**
-- **TELA:** clique na tx de liquidação → **Solana Explorer** → destaque a **inner instruction** apontando pro programa da TxODDS (`6pW64g…yP2J`).
-- **LEGENDA:** `Inner instruction → TxODDS program 6pW64g…yP2J`
-- **VOZ:** *"There's the transaction. That inner instruction is the call into the TxODDS program."*
-  <br>↳ *(Aí está a transação. Essa inner instruction é a chamada pro programa da TxODDS.)*
+- **TELA:** clique em **`settlement tx …`** → **Solscan (devnet)** → role até os *Instruction Details* / logs e destaque:
+  ```
+  Program 6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J invoke [2]
+  Program log: Instruction: ValidateStat
+  Program return: 6pW64g…yP2J AQ==          ← true
+  Market resolved: fixture=18192996 winning_outcome=2 (TxODDS Merkle-verified)
+  ```
+- **LEGENDA:** `invoke [2] → TxODDS ValidateStat → returned true`
+- **VOZ:** *"There's the transaction. `invoke [2]` — that's our program calling into TxODDS. ValidateStat. And it returned true."*
+  <br>↳ *(Aí está a transação. `invoke [2]` é o nosso programa chamando a TxODDS. ValidateStat. E retornou true.)*
+- ⚠️ **A devnet poda o histórico de transações em ~5 dias.** Confira que o link abre **no dia da gravação**. Se der "not found", gere uma liquidação nova com `MARKET_KIND=<n> pnpm --filter @verdict/relayer e2e-real 18192996 770` (use um `n` que ainda não foi usado) e cole a tx nova em `app/src/lib/demoMarkets.ts`. O link **market account ↗** ao lado nunca expira — contas não são podadas.
 
 ---
 
@@ -176,19 +183,32 @@ O track pede: *"Markets, resolution & settlement on verifiable World Cup data: o
 
 ---
 
-## 3. O que NÃO mostrar
+## 3. Estado real (verificado em 2026-07-16)
+
+Os três mercados que o site mostra, e o que cada um faz no vídeo:
+
+| Fixture | Jogo | Estado on-chain | Papel |
+|---|---|---|---|
+| `18257865` | France v England | **open**, pool 100 · `[60, 0, 40]` → odds `1.67x / — / 2.50x` · fecha 18/07 21:00 UTC | **A aposta ao vivo** (shots 5–9) |
+| `18257739` | Spain v Argentina | **open**, pool 50 · `[35, 15, 0]` → odds `1.43x / 3.33x / —` · fecha 19/07 19:00 UTC | Enche o grid |
+| `18192996` | Mexico 2–3 England | **resolved**, winner=AWAY, liquidado via CPI real | **A liquidação** (shots 10–15) |
+
+## 4. O que NÃO mostrar
 
 - **`/leaderboard`** — os dados são um array hardcoded (`const SEED` em `app/src/app/leaderboard/page.tsx`). Se o juiz clicar ali, o mock contamina a credibilidade de tudo que é real. Tire do nav antes de gravar, ou não navegue pra lá.
-- **Mercados com pool zero** — as odds aparecem como `—` (correto em pari-mutuel: sem dinheiro num lado, o múltiplo é indefinido). Verdadeiro, mas não vende. Use um mercado com pool.
-- O site hospedado **não tem as creds da TxODDS** nas env vars, então serve os fixtures seed. Se quiser os jogos ao vivo reais na tela, grave com `pnpm indexer:dev` rodando local.
+- **Não vá pra `/portfolio` sem ter apostado** — sem posição na carteira conectada, a página fica vazia.
+- O site hospedado **não tem as creds da TxODDS** nas env vars, então serve os fixtures seed acima (que existem on-chain, então os números são reais). Pra ver placar ao vivo de verdade, grave com `pnpm indexer:dev` local.
 
 ---
 
-## 4. Checklist antes de gravar
+## 5. Checklist antes de gravar
 
-- [ ] `pnpm sync:daily` — garante os mercados criados
+**⚠️ Prazo: 19/07. Os dois mercados abertos fecham no kickoff (18/07 e 19/07) — depois disso não dá mais pra gravar a aposta ao vivo.** Se passar, rode `pnpm sync:daily` pra pegar os fixtures novos e semeie um pool.
+
+- [ ] `pnpm sync:daily` — cria mercado pra qualquer fixture novo
+- [ ] **O link `settlement tx` abre no Solscan?** A devnet poda em ~5 dias. Se não abrir: `MARKET_KIND=<n novo> pnpm --filter @verdict/relayer e2e-real 18192996 770` → cole a tx em `app/src/lib/demoMarkets.ts` → rebuild
+- [ ] **France v England ainda está aberto?** (`closes 18/07 21:00 UTC`) — é o mercado do shot 7–9
 - [ ] Carteira com SOL de devnet + USDC de teste (`pnpm --filter @verdict/relayer faucet <addr> <amount>`)
-- [ ] **Um mercado com pool > 0** (aposte antes, pra ter odd de verdade no shot 6)
-- [ ] `bash scripts/test-local.sh` roda limpo (5/5) — você vai rodar ao vivo no shot 16
+- [ ] `bash scripts/test-local.sh` roda limpo (5/5) — você roda ao vivo no shot 16
 - [ ] Terminal com fonte grande (a assinatura da tx precisa ser legível)
 - [ ] Gravar em 1920×1080

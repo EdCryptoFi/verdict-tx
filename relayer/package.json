@@ -12,6 +12,7 @@
     "sync": "tsx src/sync.ts",
     "sync:daily": "tsx src/scripts/syncDaily.ts",
     "prove-resolve": "tsx src/scripts/proveResolve.ts",
+    "e2e-real": "tsx src/scripts/e2eReal.ts",
     "verify": "tsx src/scripts/verify.ts",
     "create-market": "tsx src/scripts/createMarket.ts",
     "resolve": "tsx src/scripts/resolveMarket.ts",

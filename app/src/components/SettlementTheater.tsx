@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { MarketLive } from "@verdict/shared";
+import { marketPda, MarketKind, type MarketLive } from "@verdict/shared";
+
+/** The market PDA for a fixture's 1X2 market — a permanent, verifiable address on devnet. */
+const marketAddress = (fixtureId: number) =>
+  marketPda(BigInt(fixtureId), MarketKind.FullTime1X2)[0].toBase58();
 
 const STEPS = [
   { k: "TxODDS live score", d: "Scout-verified goals from the TxODDS World Cup feed" },
@@ -77,16 +81,28 @@ export function SettlementTheater({ m }: { m: MarketLive }) {
             <div className="font-display-hero text-headline-lg italic uppercase text-primary-container">
               {winner} 🏆
             </div>
-            {m.settlementTx && (
+            <div className="mt-2 flex flex-col items-center gap-1">
+              {m.settlementTx && (
+                <a
+                  href={`https://solscan.io/tx/${m.settlementTx}?cluster=devnet`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-data-numeric text-[11px] text-electric-cyan hover:underline break-all"
+                >
+                  settlement tx {m.settlementTx.slice(0, 12)}… ↗
+                </a>
+              )}
+              {/* The market account outlives the transaction: devnet prunes tx history after a few
+                  days, but the account (status = Resolved) stays verifiable indefinitely. */}
               <a
-                href={`https://solscan.io/tx/${m.settlementTx}?cluster=devnet`}
+                href={`https://solscan.io/account/${marketAddress(m.fixtureId)}?cluster=devnet`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-block mt-2 font-data-numeric text-[11px] text-electric-cyan hover:underline break-all"
+                className="font-data-numeric text-[11px] text-on-surface-variant hover:underline break-all"
               >
-                tx {m.settlementTx.slice(0, 12)}… ↗
+                market account ↗
               </a>
-            )}
+            </div>
           </div>
         )}
       </div>

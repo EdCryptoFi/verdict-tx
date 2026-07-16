@@ -101,7 +101,9 @@ const feeAcctBefore = Number((await getAccount(conn, adminAta)).amount);
 
 if (status === "open") {
   // Same code path the daily sync uses — no duplicated resolve builder to drift out of sync.
-  await resolveMarketReal(admin, fixtureId, seq, kind);
+  const sig = await resolveMarketReal(admin, fixtureId, seq, kind);
+  console.log(`   settlement tx: ${sig}`);
+  console.log(`   https://solscan.io/tx/${sig}?cluster=${config.cluster}`);
 }
 const mr = await program.account.market.fetch(market);
 const poolAfter = Number(mr.totalPool.toString());

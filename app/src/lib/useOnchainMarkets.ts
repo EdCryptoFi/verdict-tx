@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useConnection } from "@solana/wallet-adapter-react";
-import type { MarketLive } from "@verdict/shared";
+import { MarketKind, type MarketLive } from "@verdict/shared";
 import { readonlyProgram, USDC_DECIMALS } from "./program";
 
 const POLL_MS = 12_000;
@@ -46,6 +46,9 @@ export function useOnchainMarkets() {
 
       const next = new Map<number, ChainMarket>();
       for (const { publicKey, account } of markets) {
+        // A fixture can carry one market per kind, and this map is keyed by fixture — so only the
+        // 1X2 markets the UI actually renders may claim a slot, or another kind would clobber them.
+        if (account.kind !== MarketKind.FullTime1X2) continue;
         const n = account.numOutcomes;
         next.set(Number(account.matchId.toString()), {
           fixtureId: Number(account.matchId.toString()),
